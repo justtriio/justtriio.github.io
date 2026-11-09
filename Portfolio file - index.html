@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:," />
+<title>Rajwardhan Kumar — FX Trader · EUR/USD · AUD/USD · DAX</title>
+<meta name="description" content="Trading portfolio of Rajwardhan Kumar (RIIO): three instruments, three separate backtest programmes — 150 trades, +484.23R, worst trade −1R. London session. Available for internships from 10 Nov 2026." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#030304;
+    --bg2:#08080b;
+    --panel:#0c0c11;
+    --panel2:#101018;
+    --line:rgba(255,255,255,.09);
+    --line-v:rgba(167,139,250,.28);
+    --ink:#f5f4f8;
+    --ink2:#a8a6b5;
+    --ink3:#6e6c7d;
+    --violet:#8b5cf6;
+    --violet2:#a855f7;
+    --mag:#d946ef;
+    --blue:#3ea6ff;
+    --blue2:#2563eb;
+    --teal:#2dd4bf;
+    --teal2:#0d9488;
+    --green:#34d399;
+    --red:#fb7185;
+    --amber:#fbbf24;
+    --fd:"Outfit",system-ui,sans-serif;
+    --fm:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fd);font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--violet);color:#fff}
+  a{color:inherit}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:var(--fd);margin:0;line-height:1.08;letter-spacing:-.03em;font-weight:700}
+  .grad{background:linear-gradient(94deg,var(--violet2),var(--mag));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .grad-b{background:linear-gradient(94deg,#7dd3fc,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .grad-t{background:linear-gradient(94deg,#5eead4,var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mono{font-family:var(--fm)}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);padding:7px 14px;border-radius:8px}
+
+  /* glows — accent only, behind key moments */
+  .glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
+
+  /* ---------- nav (blurred surface #1) ---------- */
+  nav{position:sticky;top:0;z-index:80;background:rgba(3,3,5,.7);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;gap:14px;height:66px}
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:700;font-size:17px;letter-spacing:-.02em}
+  .brand .mark{width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--violet),var(--mag));display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff;box-shadow:0 0 20px rgba(168,85,247,.55)}
+  .brand small{display:block;font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.14em;text-transform:uppercase}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{text-decoration:none;color:var(--ink2);font-size:14.5px;font-weight:600}
+  .nav-links a:hover{color:#fff}
+  .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;font-family:var(--fd);font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;border:1px solid transparent;transition:transform .2s,box-shadow .2s,background .2s}
+  .btn-p{background:linear-gradient(135deg,var(--violet2),#7c3aed);color:#fff;box-shadow:0 6px 26px rgba(139,92,246,.45)}
+  .btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(139,92,246,.6)}
+  .btn-g{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--ink)}
+  .btn-g:hover{background:rgba(255,255,255,.1)}
+  .btn-sm{padding:9px 17px;font-size:14px}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none}.brand small{display:none}}
+
+  /* ---------- hero (purple owns this screen) ---------- */
+  .hero{position:relative;padding:78px 0 10px;overflow:hidden;background:radial-gradient(900px 480px at 50% -120px,rgba(124,58,237,.28),transparent 65%)}
+  .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 18%,rgba(255,255,255,.55) 50%,transparent 51%),radial-gradient(1px 1px at 82% 10%,rgba(255,255,255,.4) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 30% 58%,rgba(255,255,255,.35) 50%,transparent 51%),radial-gradient(1px 1px at 90% 52%,rgba(255,255,255,.45) 50%,transparent 51%),radial-gradient(1px 1px at 58% 26%,rgba(255,255,255,.3) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 5% 74%,rgba(255,255,255,.3) 50%,transparent 51%),radial-gradient(1px 1px at 68% 82%,rgba(255,255,255,.35) 50%,transparent 51%),radial-gradient(1px 1px at 42% 88%,rgba(255,255,255,.3) 50%,transparent 51%)}
+  .hero-in{position:relative;text-align:center}
+  .pill{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--ink);background:rgba(139,92,246,.13);border:1px solid var(--line-v);padding:8px 16px;border-radius:999px}
+  .pill .live{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{font-size:clamp(46px,7.6vw,92px);font-weight:800;margin:28px auto 0;max-width:920px}
+  .hero .who{margin-top:20px;font-size:clamp(16px,2.2vw,20px);color:var(--ink);font-weight:600}
+  .hero .who span{color:var(--ink3);font-weight:500}
+  .hero .sub{max-width:660px;margin:14px auto 0;color:var(--ink2);font-size:17.5px}
+  .hero-ctas{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+
+  /* rotating radial graph */
+  .disc-zone{position:relative;width:min(560px,94vw);margin:54px auto 0;aspect-ratio:1/1}
+  .disc-glow{position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.4),rgba(217,70,239,.12) 55%,transparent 72%);filter:blur(28px)}
+  .disc{position:absolute;inset:0}
+  .disc-rotor{transform-box:fill-box;transform-origin:center;animation:spin 55s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .disc-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:46%}
+  .disc-core .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);font-weight:700}
+  .disc-core .v{font-family:var(--fm);font-size:clamp(26px,5.4vw,40px);font-weight:700;line-height:1.1;margin-top:4px}
+  .disc-core .s{font-size:12.5px;color:var(--ink3);margin-top:5px;font-weight:600}
+  .orbit{position:absolute;inset:0;animation:spin 75s linear infinite}
+  .ochip{position:absolute;transform:translate(-50%,-50%)}
+  .ochip .in{display:flex;flex-direction:column;padding:10px 15px;border-radius:13px;background:rgba(19,14,34,.78);border:1px solid var(--line-v);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 14px 36px rgba(0,0,0,.55);animation:spinrev 75s linear infinite;white-space:nowrap}
+  @keyframes spinrev{to{transform:rotate(-360deg)}}
+  .ochip .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);font-weight:700}
+  .ochip .v{font-family:var(--fm);font-size:17px;font-weight:700;line-height:1.25}
+  .oc-1{top:12%;left:50%}.oc-2{top:52%;left:88%}.oc-3{top:88%;left:44%}.oc-4{top:48%;left:12%}
+  @media(max-width:640px){.ochip .v{font-size:14px}.ochip .in{padding:8px 11px}}
+  .hero-stats{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:44px auto 0;max-width:820px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+  .hero-stats .hs{flex:1 1 150px;padding:17px 14px;border-right:1px solid var(--line);text-align:center}
+  .hero-stats .hs:last-child{border-right:none}
+  .hs .v{font-family:var(--fm);font-size:21px;font-weight:700}
+  .hs .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:700;margin-top:3px}
+  .bt-note{margin:18px auto 0;font-size:13px;color:var(--ink3);font-weight:600;letter-spacing:.04em}
+
+  /* ---------- marquee (right-to-left) ---------- */
+  .marquee{margin:64px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2);overflow:hidden;padding:17px 0}
+  .mq-track{display:flex;width:max-content;animation:slide 38s linear infinite}
+  .marquee:hover .mq-track{animation-play-state:paused}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .mq{display:flex;align-items:center;gap:13px;padding:0 28px;white-space:nowrap;font-family:var(--fm);font-size:15.5px}
+  .mq b{font-size:18px}
+  .mq .sep{color:var(--violet2);font-size:12px}
+  .mq .lbl{color:var(--ink3);font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+
+  /* ---------- sections ---------- */
+  section{padding:104px 0 6px;position:relative}
+  .sec-head{text-align:center;max-width:740px;margin:0 auto 56px;position:relative}
+  .sec-head h2{font-size:clamp(34px,5vw,56px);font-weight:800;margin:22px 0 15px}
+  .sec-head p{color:var(--ink2);margin:0;font-size:17px}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* emoji boxes — what I do */
+  .do-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:960px){.do-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.do-grid{grid-template-columns:1fr}}
+  .do{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px 26px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .do:hover{transform:translateY(-5px);border-color:var(--line-v);box-shadow:0 18px 46px rgba(124,58,237,.22)}
+  .emoji-chip{display:inline-grid;place-items:center;width:52px;height:52px;font-size:25px;border-radius:14px;background:rgba(139,92,246,.13);border:1px solid var(--line-v);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);margin-bottom:18px}
+  .do h3{font-size:20px;margin-bottom:9px}
+  .do p{color:var(--ink2);font-size:15px;margin:0 0 16px}
+  .do .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .do .tags span{font-size:12.5px;font-weight:600;background:var(--panel2);border:1px solid var(--line);padding:5px 11px;border-radius:7px;color:var(--ink2)}
+  .do .big{font-family:var(--fm);font-size:23px;font-weight:700}
+
+  /* ---------- apps hub ---------- */
+  .hub{position:relative;height:560px;max-width:1020px;margin:0 auto}
+  .hub svg{position:absolute;inset:0;width:100%;height:100%}
+  .hub-line{stroke:rgba(167,139,250,.35);stroke-width:1.6;fill:none;stroke-dasharray:7 7;animation:dash 1.6s linear infinite}
+  @keyframes dash{to{stroke-dashoffset:-14}}
+  .hub-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:172px;height:172px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 35% 30%,rgba(168,85,247,.4),rgba(16,12,30,.92) 68%);border:1px solid var(--line-v);box-shadow:0 0 70px rgba(139,92,246,.4);z-index:3;padding:14px}
+  .hub-center .n{font-size:24px;font-weight:800;letter-spacing:.06em}
+  .hub-center .r{font-size:11.5px;color:var(--ink2);font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+  .hub-center .s{font-size:11px;color:var(--ink3);margin-top:6px;line-height:1.45}
+  .app{position:absolute;width:228px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 19px;z-index:2;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .app:hover{transform:translateY(-4px);border-color:var(--line-v);box-shadow:0 16px 42px rgba(124,58,237,.25)}
+  .app .top{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+  .app .tile{width:44px;height:44px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+  .app .tile img{width:25px;height:25px}
+  .app .tile .m5{font-family:var(--fm);font-weight:700;font-size:16px;color:#7dd3fc}
+  .app h3{font-size:16.5px}
+  .app .role{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet2);font-weight:700}
+  .app p{margin:0;color:var(--ink2);font-size:13.5px;line-height:1.55}
+  .app-tv{top:0;left:0}.app-mt{top:0;right:0}.app-no{bottom:0;left:0}.app-gs{bottom:0;right:0}
+  @media(max-width:820px){
+    .hub{height:auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .hub svg{display:none}
+    .hub-center{position:static;transform:none;order:-1;margin-bottom:8px}
+    .app{position:static;width:100%;max-width:420px}
+  }
+
+  /* ---------- process ---------- */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+  @media(max-width:960px){.steps{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:27px 24px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .step:hover{transform:translateY(-5px);border-color:rgba(62,166,255,.4);box-shadow:0 18px 44px rgba(37,99,235,.18)}
+  .step .emoji-chip{background:rgba(62,166,255,.1);border-color:rgba(62,166,255,.3)}
+  .step .num{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.14em}
+  .step h3{font-size:19.5px;margin:11px 0 9px}
+  .step p{color:var(--ink2);font-size:14.5px;margin:0}
+
+  /* ---------- showcases ---------- */
+  .show{--acc:var(--violet2);--acc2:var(--violet);--accline:rgba(167,139,250,.3);background:var(--panel);border:1px solid var(--accline);border-radius:22px;padding:0 38px 38px;margin-bottom:56px;box-shadow:0 26px 70px rgba(0,0,0,.5);overflow:hidden}
+  .show.dax{--acc:#7dd3fc;--acc2:var(--blue);--accline:rgba(62,166,255,.32)}
+  .show.au{--acc:#5eead4;--acc2:var(--teal);--accline:rgba(45,212,191,.3)}
+  @media(max-width:640px){.show{padding:0 18px 26px}}
+  .chrome{display:flex;align-items:center;gap:7px;margin:0 -38px;padding:13px 20px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+  @media(max-width:640px){.chrome{margin:0 -18px}}
+  .chrome i{width:11px;height:11px;border-radius:50%;display:block;flex:none}
+  .chrome .addr{margin-left:11px;font-family:var(--fm);font-size:12px;color:var(--ink3);border:1px solid var(--line);border-radius:7px;padding:3px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .show-top{display:flex;justify-content:space-between;gap:22px;flex-wrap:wrap;align-items:flex-end;margin:30px 0 6px}
+  .show-top h3{font-size:clamp(30px,4.4vw,44px)}
+  .show-top h3 .tick{color:var(--acc)}
+  .period{color:var(--ink3);font-family:var(--fm);font-size:12.5px;margin-top:7px;letter-spacing:.03em}
+  .big-r{font-family:var(--fm);text-align:right}
+  .big-r .v{font-size:clamp(36px,5.4vw,54px);font-weight:700;color:var(--green);line-height:1}
+  .big-r .k{color:var(--ink3);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-top:7px;font-family:var(--fd)}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:24px 0 4px}
+  @media(max-width:860px){.stat-grid{grid-template-columns:1fr 1fr}}
+  .stat{background:var(--bg2);border:1px solid var(--line);border-radius:13px;padding:15px 17px}
+  .stat .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);font-weight:700}
+  .stat .v{font-family:var(--fm);font-size:19.5px;font-weight:700;margin-top:3px}
+  .block-title{font-family:var(--fd);font-size:16.5px;font-weight:700;margin:36px 0 14px;display:flex;align-items:center;gap:12px}
+  .block-title::after{content:"";flex:1;height:1px;background:var(--line)}
+  .block-title .hint{font-size:12px;color:var(--ink3);font-weight:600;letter-spacing:0}
+  .eq-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px 14px 6px}
+  .eq-wrap svg{width:100%;height:auto;display:block}
+  .eq-line{stroke-dasharray:1500;stroke-dashoffset:1500;transition:stroke-dashoffset 2.2s ease .15s}
+  .in .eq-line{stroke-dashoffset:0}
+  .eq-x{display:flex;justify-content:space-between;font-family:var(--fm);font-size:11px;color:var(--ink3);padding:7px 6px 10px;flex-wrap:wrap;gap:3px}
+  .bars{display:flex;flex-direction:column;gap:9px}
+  .bar-row{display:grid;grid-template-columns:46px 1fr 128px;gap:12px;align-items:center;font-size:14px}
+  .bar-row .bl{font-weight:700;color:var(--ink2)}
+  .bar-track{height:22px;background:var(--bg2);border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:6px;width:0;transition:width 1.1s ease}
+  .in .bar-fill{width:var(--w)}
+  .bar-fill.dim{background:linear-gradient(90deg,#4b4757,#6b6878)}
+  .bar-row .bv{font-family:var(--fm);font-weight:700;text-align:right;font-size:13px;white-space:nowrap}
+  .bar-row .bv small{color:var(--ink3);font-weight:400}
+  @media(max-width:540px){.bar-row{grid-template-columns:38px 1fr 104px}.bar-row .bv{font-size:11.5px}}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:10.5px 12px;border-bottom:1px solid rgba(255,255,255,.05)}
+  td.n,th.n{text-align:right;font-family:var(--fm);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  .tbl-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media(max-width:880px){.two-col{grid-template-columns:1fr}}
+  .split{display:flex;height:30px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-family:var(--fm);font-size:12.5px;font-weight:700}
+  .split .a{background:linear-gradient(90deg,var(--acc2),var(--acc));color:#06121a;display:flex;align-items:center;padding:0 13px;white-space:nowrap;overflow:hidden}
+  .show .split .a{color:#fff}
+  .split .b{background:#23222c;color:var(--ink2);display:flex;align-items:center;padding:0 13px;justify-content:flex-end;flex:1;white-space:nowrap}
+  .split-legend{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin-top:9px}
+  .callouts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  @media(max-width:880px){.callouts{grid-template-columns:1fr}}
+  .callout{border:1px solid var(--accline);background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border-radius:14px;padding:18px}
+  .callout .v{font-family:var(--fm);font-size:22px;font-weight:700;color:var(--acc)}
+  .callout p{margin:5px 0 0;font-size:13.5px;color:var(--ink2)}
+  .subprog{border-top:1px dashed var(--accline);margin-top:44px;padding-top:8px}
+  .subprog:first-of-type{border-top:none;margin-top:6px}
+  .sub-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-end;margin:22px 0 2px}
+  .sub-head h4{font-size:clamp(22px,3.2vw,30px)}
+  .sub-head h4 .tick{color:var(--acc)}
+  .note-box{border:1px solid var(--accline);background:rgba(45,212,191,.05);border-radius:13px;padding:16px 18px;font-size:14px;color:var(--ink2);margin-top:24px}
+  .note-box strong{color:var(--ink)}
+  .au-combined{margin-top:34px;text-align:center;border:1px solid var(--accline);border-radius:16px;padding:24px;background:var(--bg2)}
+  .au-combined .v{font-family:var(--fm);font-size:30px;font-weight:700}
+  .au-combined p{margin:6px auto 0;color:var(--ink2);font-size:14px;max-width:560px}
+
+  /* findings */
+  .find-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+  @media(max-width:960px){.find-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.find-grid{grid-template-columns:1fr}}
+  .find{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .find:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22);box-shadow:0 16px 42px rgba(0,0,0,.5)}
+  .find .fv{font-family:var(--fm);font-size:25px;font-weight:700}
+  .find h3{font-size:17.5px;margin:10px 0 8px}
+  .find p{color:var(--ink2);font-size:14.5px;margin:0}
+  .find .src{margin-top:14px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-weight:700}
+
+  /* background */
+  .bg-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+  @media(max-width:880px){.bg-grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px}
+  .card h3{font-size:21px;margin-bottom:14px}
+  .xp{display:flex;gap:16px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .xp:last-child{border-bottom:none;padding-bottom:0}
+  .xp .when{font-family:var(--fm);font-size:12px;color:var(--violet2);white-space:nowrap;padding-top:3px;min-width:106px}
+  .xp h4{margin:0 0 4px;font-size:16px}
+  .xp p{margin:0;color:var(--ink2);font-size:14.5px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14.5px}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--ink3);font-weight:600}
+  .kv .v{font-weight:700;text-align:right}
+  .kv .v a{text-decoration:none;border-bottom:1px dashed var(--line-v)}
+
+  /* faq */
+  .faq{max-width:820px;margin:0 auto}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+  details[open]{border-color:rgba(255,255,255,.24)}
+  summary{cursor:pointer;list-style:none;padding:21px 24px;font-weight:600;font-size:16.5px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  summary::-webkit-details-marker{display:none}
+  summary .plus{font-family:var(--fm);color:var(--violet2);font-size:22px;line-height:1;transition:transform .25s}
+  details[open] summary .plus{transform:rotate(45deg)}
+  details .ans{padding:0 24px 22px;color:var(--ink2);font-size:15.5px}
+
+  /* CTA — violet returns */
+  .cta{position:relative;margin-top:110px;padding:96px 0 54px;border-top:1px solid var(--line);overflow:hidden;text-align:center;background:radial-gradient(800px 420px at 50% 115%,rgba(124,58,237,.3),transparent 65%)}
+  .cta h2{font-size:clamp(40px,6.6vw,72px);font-weight:800;position:relative;margin-top:26px}
+  .cta p{color:var(--ink2);max-width:580px;margin:18px auto 0;position:relative}
+  .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px;position:relative}
+  .copy-note{font-size:13px;color:var(--green);font-family:var(--fm);min-height:19px;margin-top:12px;position:relative}
+  .fineprint{margin-top:64px;padding-top:26px;border-top:1px solid var(--line);color:var(--ink3);font-size:13px;text-align:left;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;position:relative}
+  .mid-cta{margin-top:46px;text-align:center}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .disc-rotor,.orbit,.ochip .in,.mq-track,.hub-line,.pill .live{animation:none}
+    .reveal{opacity:1;transform:none;transition:none}
+    .eq-line{stroke-dashoffset:0;transition:none}
+    .bar-fill{transition:none}
+  }
+  @media print{
+    :root{--bg:#fff;--bg2:#f5f5f7;--panel:#fff;--panel2:#f5f5f7;--ink:#111;--ink2:#333;--ink3:#666;--line:#bbb;--accline:#bbb}
+    body{background:#fff;color:#111;font-size:12px}
+    nav,.hero-ctas,.cta-btns,.disc-zone,.orbit,.glow,.stars,.marquee,.mid-cta{display:none !important}
+    .hero{padding:8px 0;background:none}
+    section{padding:24px 0 0}
+    .reveal{opacity:1;transform:none}
+    .show,.card,.find,.step,.do{box-shadow:none;break-inside:avoid}
+    .eq-line{stroke-dashoffset:0}
+    .bar-fill{width:var(--w) !important}
+    .hub{height:auto}.hub svg{display:none}.hub-center,.app{position:static;transform:none}
+    .grad,.grad-b,.grad-t{color:#6d28d9;-webkit-text-fill-color:#6d28d9}
+    a{text-decoration:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="mark">R</span><span>Rajwardhan Kumar<small>RIIO · FX Trader</small></span></a>
+    <div class="nav-links">
+      <a href="#work">What I do</a>
+      <a href="#desk">The desk</a>
+      <a href="#logs">Backtest logs</a>
+      <a href="#findings">Findings</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-p btn-sm" href="mailto:Rajwardhankr@outlook.com">Contact ↗</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO — purple territory ============ -->
+<header class="hero" id="top">
+  <div class="stars"></div>
+  <div class="glow" style="width:560px;height:560px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,#6d28d9,transparent 70%);opacity:.5"></div>
+  <div class="wrap hero-in">
+    <span class="pill"><span class="live"></span> Available for internships — from 10 Nov 2026 · Remote · India</span>
+    <h1>I don’t predict.<br />I <span class="grad">confirm.</span></h1>
+    <p class="who">Rajwardhan Kumar · 19 · Independent FX Trader <span>· Barh, Bihar, India</span></p>
+    <p class="sub">EUR/USD, AUD/USD and DAX — London session only, since August 2024. Three instruments, three separate playbooks, every trade backtested, journaled and graded before it earns a place in the plan. This page is the evidence.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-p" href="#logs">See the backtest logs ↓</a>
+      <a class="btn btn-g" href="mailto:Rajwardhankr@outlook.com">Contact me</a>
+    </div>
+
+    <!-- rotating radial equity graph -->
+    <div class="disc-zone" role="img" aria-label="Rotating radial graph of combined backtest equity: plus 484.23 R across 150 trades">
+      <div class="disc-glow"></div>
+      <svg class="disc" viewBox="0 0 460 460" aria-hidden="true">
+        <g class="disc-rotor">
+          <circle cx="230" cy="230" r="222" fill="none" stroke="rgba(167,139,250,.25)" stroke-width="1" stroke-dasharray="3 9"/>
+          <circle cx="230" cy="230" r="196" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
+          <circle cx="230" cy="230" r="150" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+          <circle cx="230" cy="230" r="104" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+          <circle cx="230" cy="230" r="58" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+          <!-- radial bars -->
+          <g stroke="#8b5cf6" stroke-width="5" stroke-linecap="round" opacity=".75">
+            <line x1="230" y1="52" x2="230" y2="86"/><line x1="322" y1="71" x2="308" y2="102"/><line x1="388" y1="138" x2="359" y2="158"/>
+            <line x1="404" y1="230" x2="368" y2="230"/><line x1="388" y1="322" x2="359" y2="302"/><line x1="322" y1="389" x2="308" y2="358"/>
+            <line x1="230" y1="408" x2="230" y2="372"/><line x1="138" y1="389" x2="152" y2="358"/><line x1="72" y1="322" x2="101" y2="302"/>
+            <line x1="56" y1="230" x2="94" y2="230"/><line x1="72" y1="138" x2="101" y2="158"/><line x1="138" y1="71" x2="152" y2="102"/>
+          </g>
+          <!-- spiral equity line -->
+          <polyline points="230,190 284,199 303,272 230,334 123,292 107,159 230,70 384,141" fill="none" stroke="#c084fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <g fill="#0c0c11" stroke="#c084fc" stroke-width="2.5">
+            <circle cx="230" cy="190" r="4.5"/><circle cx="284" cy="199" r="4.5"/><circle cx="303" cy="272" r="4.5"/><circle cx="230" cy="334" r="4.5"/>
+            <circle cx="123" cy="292" r="4.5"/><circle cx="107" cy="159" r="4.5"/><circle cx="230" cy="70" r="4.5"/><circle cx="384" cy="141" r="5.5"/>
+          </g>
+          <circle cx="384" cy="141" r="11" fill="none" stroke="#d946ef" stroke-width="1.5" opacity=".7"/>
+        </g>
+      </svg>
+      <div class="disc-core">
+        <div class="k">Combined backtest</div>
+        <div class="v">+<span data-count="484.23" data-dec="2">484.23</span>R</div>
+        <div class="s">150 trades · three separate<br />backtest programmes</div>
+      </div>
+      <div class="orbit" aria-hidden="true">
+        <div class="ochip oc-1"><div class="in"><span class="k">Win rate · EU$</span><span class="v">87.8%</span></div></div>
+        <div class="ochip oc-2"><div class="in"><span class="k">Worst trade</span><span class="v">−1R cap</span></div></div>
+        <div class="ochip oc-3"><div class="in"><span class="k">Trades logged</span><span class="v">150</span></div></div>
+        <div class="ochip oc-4"><div class="in"><span class="k">Session</span><span class="v">London only</span></div></div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hs"><div class="v" style="color:var(--violet2)">+176.51R</div><div class="k">EUR/USD · 49 trades</div></div>
+      <div class="hs"><div class="v" style="color:var(--blue)">+202.17R</div><div class="k">DAX · 69 trades</div></div>
+      <div class="hs"><div class="v" style="color:var(--teal)">+64.55R</div><div class="k">AUD/USD M5/M15 · 23</div></div>
+      <div class="hs"><div class="v" style="color:var(--teal)">+41.00R</div><div class="k">AUD/USD M1 EMs · 9</div></div>
+    </div>
+    <p class="bt-note">BACKTEST DATA — NOTION TRADE LOGS · LONDON SESSION · RESEARCH, NOT LIVE RESULTS</p>
+  </div>
+</header>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-label="Headline statistics">
+  <div class="mq-track" id="mqTrack">
+    <div class="mq"><span class="lbl">Combined</span><b class="pos">+484.23R · 150 trades</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">EUR/USD</span><b>+176.51R · 87.8% WR</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">DAX</span><b>+202.17R · 84.1% WR</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">AUD/USD M5/M15</span><b>+64.55R · 82.6% WR</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">AUD/USD M1 EMs</span><b>+41.00R · 77.8% WR</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">Worst trade · 150 trades</span><b>−1R — never worse</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">Best trade</span><b class="pos">+15.66R · EUR/USD</b><span class="sep">◆</span></div>
+    <div class="mq"><span class="lbl">HP-grade setups · EU$</span><b>17 trades · 17 wins</b><span class="sep">◆</span></div>
+  </div>
+</div>
+
+<!-- ============ WHAT I DO — emoji boxes ============ -->
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">What I do</span>
+      <h2>Six disciplines.<br />One <span class="grad">standard.</span></h2>
+      <p>Nothing gets traded — or claimed — until the data says it has earned it. These are the six jobs behind every number further down this page.</p>
+    </div>
+    <div class="do-grid">
+      <div class="do reveal"><span class="emoji-chip">🔍</span><h3>Market Research</h3><p>Every London session starts with a written plan: higher-timeframe bias, the session POIs price is drawing to, and the windows where my data says to engage — and where it says to stay out.</p><div class="tags"><span>EUR/USD</span><span>AUD/USD</span><span>DAX</span><span>Pre-session briefs</span></div></div>
+      <div class="do reveal"><span class="emoji-chip">📊</span><h3>Backtesting &amp; Data</h3><p>150 trades logged trade-by-trade in Notion and sliced in Google Sheets — by model, month, weekday, phase, direction and decision quality. The findings below are what fell out.</p><div class="big pos">+484.23R <span style="font-size:13px;color:var(--ink3)">logged &amp; verified</span></div></div>
+      <div class="do reveal"><span class="emoji-chip">🧭</span><h3>MTF Analysis</h3><p>Multi-timeframe structure first, entry second. Trading with MTF order flow on DAX returned +196.27R at 87.1%; against it, 57.1%. Alignment is not a preference — it’s measured.</p><div class="tags"><span>Daily · H4 · H1 bias</span><span>Order flow</span><span>Session POIs</span></div></div>
+      <div class="do reveal"><span class="emoji-chip">🛡️</span><h3>Risk Management</h3><p>Risk is defined before entry and never renegotiated mid-trade. Across 150 backtested trades the worst single outcome is −1R, while average wins run roughly four times the average loss.</p><div class="big">−1R <span style="font-size:13px;color:var(--ink3)">hard cap · 1% risk per trade</span></div></div>
+      <div class="do reveal"><span class="emoji-chip">🎓</span><h3>Trader Support &amp; Mentoring</h3><p>Moderator and trader support in a private community of 210+ members since January 2025, 50+ traders guided personally — and previously Pro Trader / support in a 4,000+ member community.</p><div class="tags"><span>210+ member community</span><span>50+ traders guided</span></div></div>
+      <div class="do reveal"><span class="emoji-chip">🤝</span><h3>Prop-Firm Trading</h3><p>Trader-side evaluation experience across 3–4 challenges — currently in evaluation with Funding Pips. I know the rules, the drawdown maths and the pressure from the seat that matters: the trader’s.</p><div class="tags"><span>Funding Pips · in evaluation</span><span>3–4 challenges taken</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE DESK — interconnected apps hub ============ -->
+<section id="desk">
+  <div class="glow" style="width:480px;height:480px;top:0;left:-240px;background:radial-gradient(circle,rgba(37,99,235,.35),transparent 70%);opacity:.45"></div>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The desk</span>
+      <h2>Four tools.<br />One <span class="grad-b">connected desk.</span></h2>
+      <p>Charts, execution, journals and statistics — wired into a single workflow, so a trade can be traced from first idea to final grade.</p>
+    </div>
+    <div class="hub reveal">
+      <svg viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true">
+        <path class="hub-line" d="M500,280 C380,250 300,190 236,120" />
+        <path class="hub-line" d="M500,280 C620,250 700,190 764,120" />
+        <path class="hub-line" d="M500,280 C380,310 300,370 236,440" />
+        <path class="hub-line" d="M500,280 C620,310 700,370 764,440" />
+        <circle r="4" fill="#a855f7"><animateMotion dur="3.6s" repeatCount="indefinite" path="M500,280 C380,250 300,190 236,120" /></circle>
+        <circle r="4" fill="#7dd3fc"><animateMotion dur="4.2s" repeatCount="indefinite" path="M500,280 C620,250 700,190 764,120" /></circle>
+        <circle r="4" fill="#a855f7"><animateMotion dur="3.9s" repeatCount="indefinite" path="M500,280 C380,310 300,370 236,440" /></circle>
+        <circle r="4" fill="#5eead4"><animateMotion dur="4.5s" repeatCount="indefinite" path="M500,280 C620,310 700,370 764,440" /></circle>
+      </svg>
+      <div class="app app-tv"><div class="top"><span class="tile"><img src="https://cdn.simpleicons.org/tradingview/ffffff" alt="TradingView logo" loading="lazy" /></span><div><h3>TradingView</h3><div class="role">Charts</div></div></div><p>Multi-timeframe charting — bias, liquidity sweeps and session POIs are marked here before the session opens.</p></div>
+      <div class="app app-mt"><div class="top"><span class="tile"><span class="m5">M5</span></span><div><h3>MetaTrader 5</h3><div class="role">Execution</div></div></div><p>Order execution and prop-firm evaluation trading — where the plan meets the market, at fixed 1% risk.</p></div>
+      <div class="app app-no"><div class="top"><span class="tile"><img src="https://cdn.simpleicons.org/notion/ffffff" alt="Notion logo" loading="lazy" /></span><div><h3>Notion</h3><div class="role">Journals</div></div></div><p>Every backtest and review lives here — 150 trades logged with model, phase, grade and decision-quality colour.</p></div>
+      <div class="app app-gs"><div class="top"><span class="tile"><img src="https://cdn.simpleicons.org/googlesheets/ffffff" alt="Google Sheets logo" loading="lazy" /></span><div><h3>Google Sheets</h3><div class="role">Statistics</div></div></div><p>Where the logs get interrogated — R-multiple breakdowns by month, weekday, model and phase that rewrite the plan.</p></div>
+      <div class="hub-center"><div class="n">RIIO</div><div class="r">Trading Desk</div><div class="s">Research → execution →<br />journal → statistics</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="process">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The process</span>
+      <h2>One sequence.<br />No <span class="grad-b">shortcuts.</span></h2>
+      <p>The same four steps produced every log below. If a step is missing, there is no trade — that discipline is the strategy.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="emoji-chip">🌊</span><div class="num">STEP 01</div><h3>Wait for the sweep</h3><p>Price raids liquidity above or below a key level, sweeping stops. No sweep, no interest — chasing is how the other side gets paid.</p></div>
+      <div class="step reveal"><span class="emoji-chip">📍</span><div class="num">STEP 02</div><h3>Mark the session POI</h3><p>The sweep must deliver price into a pre-marked session point of interest, aligned with the higher-timeframe draw. Location filters out most noise.</p></div>
+      <div class="step reveal"><span class="emoji-chip">✅</span><div class="num">STEP 03</div><h3>Confirm the CHoCH</h3><p>Only a confirmed change of character on the entry timeframe triggers execution — the rule behind the 17–0 high-probability run on EUR/USD.</p></div>
+      <div class="step reveal"><span class="emoji-chip">📓</span><div class="num">STEP 04</div><h3>Journal &amp; grade</h3><p>Every trade is logged, graded HP / MP / LP and colour-tagged for decision quality — so next month’s plan is written by data, not memory.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHOWCASES ============ -->
+<section id="logs">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The evidence · Backtest logs</span>
+      <h2>Three instruments.<br />Three <span class="grad">playbooks.</span></h2>
+      <p>Each instrument is traded and logged <strong>separately</strong> — different entry models, different golden hours, different failure modes. All figures are <strong>backtest results</strong> from Notion trade logs, London session, presented exactly as logged — losing months included.</p>
+    </div>
+
+    <!-- ===== EUR/USD — violet ===== -->
+    <article class="show reveal">
+      <div class="chrome"><i style="background:#fb7185"></i><i style="background:#fbbf24"></i><i style="background:#34d399"></i><span class="addr">backtest-log · EUR/USD · Aug 2025 – Jan 2026 · Notion</span></div>
+      <div class="show-top">
+        <div><h3>EUR/USD <span class="tick">EU$</span></h3><div class="period">BACKTEST · AUG 2025 – JAN 2026 · LONDON SESSION · AVG STOP 6.2 PIPS · RISK 1%</div></div>
+        <div class="big-r"><div class="v">+176.51R</div><div class="k">49 trades · 87.8% win rate</div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Average trade</div><div class="v">+3.60R</div></div>
+        <div class="stat"><div class="k">Avg win / avg loss</div><div class="v">+4.21R / −0.72R</div></div>
+        <div class="stat"><div class="k">Best / worst</div><div class="v">+15.66R / −1R</div></div>
+        <div class="stat"><div class="k">Longest win streak</div><div class="v">10 trades</div></div>
+      </div>
+
+      <div class="block-title">Equity curve — cumulative R by month</div>
+      <div class="eq-wrap reveal">
+        <svg viewBox="0 0 600 260" role="img" aria-label="EUR/USD equity curve rising from 0 to +176.51R over six months">
+          <defs><linearGradient id="eqEu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a855f7" stop-opacity=".35"/><stop offset="1" stop-color="#a855f7" stop-opacity="0"/></linearGradient></defs>
+          <g stroke="rgba(255,255,255,.06)"><line x1="20" y1="60" x2="580" y2="60"/><line x1="20" y1="120" x2="580" y2="120"/><line x1="20" y1="180" x2="580" y2="180"/><line x1="20" y1="240" x2="580" y2="240"/></g>
+          <path d="M20,240 L113,191 L207,161 L300,123 L393,75 L487,54 L580,30 L580,250 L20,250 Z" fill="url(#eqEu)"/>
+          <polyline class="eq-line" points="20,240 113,191 207,161 300,123 393,75 487,54 580,30" fill="none" stroke="#c084fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <g fill="#0c0c11" stroke="#c084fc" stroke-width="2.5"><circle cx="20" cy="240" r="4.5"/><circle cx="113" cy="191" r="4.5"/><circle cx="207" cy="161" r="4.5"/><circle cx="300" cy="123" r="4.5"/><circle cx="393" cy="75" r="4.5"/><circle cx="487" cy="54" r="4.5"/><circle cx="580" cy="30" r="5"/></g>
+          <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#a8a6b5"><text x="102" y="178">+41.26</text><text x="196" y="148">+66.56</text><text x="284" y="110">+98.32</text><text x="366" y="62">+138.32</text><text x="460" y="42">+155.96</text><text x="512" y="20">+176.51R</text></g>
+        </svg>
+        <div class="eq-x"><span>Start · 0R</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span></div>
+      </div>
+
+      <div class="block-title">Monthly performance</div>
+      <div class="bars reveal">
+        <div class="bar-row"><span class="bl">Aug</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+41.26R <small>· 9 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Sep</span><div class="bar-track"><div class="bar-fill" style="--w:61%"></div></div><span class="bv">+25.30R <small>· 11 tr · 72.7%</small></span></div>
+        <div class="bar-row"><span class="bl">Oct</span><div class="bar-track"><div class="bar-fill" style="--w:77%"></div></div><span class="bv">+31.76R <small>· 10 tr · 80%</small></span></div>
+        <div class="bar-row"><span class="bl">Nov</span><div class="bar-track"><div class="bar-fill" style="--w:97%"></div></div><span class="bv">+40.00R <small>· 7 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Dec</span><div class="bar-track"><div class="bar-fill" style="--w:43%"></div></div><span class="bv">+17.64R <small>· 5 tr · 80%</small></span></div>
+        <div class="bar-row"><span class="bl">Jan</span><div class="bar-track"><div class="bar-fill" style="--w:50%"></div></div><span class="bv">+20.55R <small>· 7 tr · 100%</small></span></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="block-title">Entry models</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Model</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td>CC5 0.25</td><td class="n">25</td><td class="n">+83.45R</td><td class="n">80.0%</td></tr>
+            <tr><td>LC-1 (M5)</td><td class="n">13</td><td class="n">+49.06R</td><td class="n">92.3%</td></tr>
+            <tr><td>CC5- F</td><td class="n">5</td><td class="n">+16.55R</td><td class="n">100%</td></tr>
+            <tr><td>LQ-EM4</td><td class="n">3</td><td class="n">+13.70R</td><td class="n">100%</td></tr>
+            <tr><td>M15 S-C</td><td class="n">1</td><td class="n">+4.10R</td><td class="n">100%</td></tr>
+          </table></div>
+          <div class="block-title">Probability grades</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Grade</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td><strong>HP</strong> — high probability</td><td class="n">17</td><td class="n">+76.20R</td><td class="n">100%</td></tr>
+            <tr><td><strong>MP</strong> — medium</td><td class="n">23</td><td class="n">+78.92R</td><td class="n">82.6%</td></tr>
+            <tr><td><strong>LP</strong> — low</td><td class="n">9</td><td class="n">+21.39R</td><td class="n">77.8%</td></tr>
+          </table></div>
+        </div>
+        <div>
+          <div class="block-title">Market phases</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Phase</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td>Phase A</td><td class="n">7</td><td class="n">+43.30R</td><td class="n">100%</td></tr>
+            <tr><td>Phase B</td><td class="n">12</td><td class="n">+46.20R</td><td class="n">100%</td></tr>
+            <tr><td>Phase A2</td><td class="n">10</td><td class="n">+31.26R</td><td class="n">90.0%</td></tr>
+            <tr><td>Phase C</td><td class="n">18</td><td class="n">+51.10R</td><td class="n">72.2%</td></tr>
+            <tr><td>Phase D</td><td class="n">2</td><td class="n">+4.65R</td><td class="n">100%</td></tr>
+          </table></div>
+          <div class="block-title">Direction split</div>
+          <div class="split"><div class="a" style="width:54%">SHORT +95.61R</div><div class="b">LONG +80.90R</div></div>
+          <div class="split-legend"><span>Shorts — 27 trades · 85.2% WR</span><span>Longs — 22 trades · 90.9% WR</span></div>
+          <div class="block-title">Weekdays</div>
+          <div class="bars reveal">
+            <div class="bar-row"><span class="bl">Mon</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+63.85R <small>· 85.7%</small></span></div>
+            <div class="bar-row"><span class="bl">Tue</span><div class="bar-track"><div class="bar-fill" style="--w:79%"></div></div><span class="bv">+50.40R <small>· 84.6%</small></span></div>
+            <div class="bar-row"><span class="bl">Wed</span><div class="bar-track"><div class="bar-fill" style="--w:37%"></div></div><span class="bv">+23.56R <small>· 100%</small></span></div>
+            <div class="bar-row"><span class="bl">Thu</span><div class="bar-track"><div class="bar-fill" style="--w:10%"></div></div><span class="bv">+6.15R <small>· 66.7%</small></span></div>
+            <div class="bar-row"><span class="bl">Fri</span><div class="bar-track"><div class="bar-fill" style="--w:51%"></div></div><span class="bv">+32.55R <small>· 91.7%</small></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callouts">
+        <div class="callout"><div class="v">+57.02R</div><p><strong>Golden window.</strong> 13 trades taken 12:00–12:30 returned +57.02R at 92.3% — a third of the log’s profit in one half-hour.</p></div>
+        <div class="callout"><div class="v">17 / 17</div><p><strong>Perfect HP ladder.</strong> Setups graded high-probability before entry won all 17 times. The grading works — so it gates size.</p></div>
+        <div class="callout"><div class="v">92.3%</div><p><strong>LC-1 beat the flagship.</strong> LC-1 (M5) returned +49.06R at 92.3% WR vs CC5 0.25’s 80.0% across the full log.</p></div>
+      </div>
+    </article>
+
+    <!-- ===== DAX — electric blue ===== -->
+    <article class="show dax reveal">
+      <div class="chrome"><i style="background:#fb7185"></i><i style="background:#fbbf24"></i><i style="background:#34d399"></i><span class="addr">backtest-log · DAX · Jan – Nov 2025 · Notion</span></div>
+      <div class="show-top">
+        <div><h3>DAX <span class="tick">DE40</span></h3><div class="period">BACKTEST · JAN – NOV 2025 · LONDON SESSION · 11 MONTHS LOGGED · AVG STOP 42.6 PTS</div></div>
+        <div class="big-r"><div class="v">+202.17R</div><div class="k">69 trades · 84.1% win rate</div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Average trade</div><div class="v">+2.93R</div></div>
+        <div class="stat"><div class="k">Avg win / avg loss</div><div class="v">+3.66R / −0.93R</div></div>
+        <div class="stat"><div class="k">Best / worst</div><div class="v">+12.50R / −1R</div></div>
+        <div class="stat"><div class="k">Longest win streak</div><div class="v">18 trades</div></div>
+      </div>
+
+      <div class="block-title">Equity curve — cumulative R by month</div>
+      <div class="eq-wrap reveal">
+        <svg viewBox="0 0 600 260" role="img" aria-label="DAX equity curve rising from 0 to +202.17R over eleven months, flattening in March">
+          <defs><linearGradient id="eqDax" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3ea6ff" stop-opacity=".35"/><stop offset="1" stop-color="#3ea6ff" stop-opacity="0"/></linearGradient></defs>
+          <g stroke="rgba(255,255,255,.06)"><line x1="20" y1="60" x2="580" y2="60"/><line x1="20" y1="120" x2="580" y2="120"/><line x1="20" y1="180" x2="580" y2="180"/><line x1="20" y1="240" x2="580" y2="240"/></g>
+          <path d="M20,240 L71,197 L122,153 L173,146 L224,134 L275,103 L326,85 L377,67 L428,57 L479,40 L530,35 L580,30 L580,250 L20,250 Z" fill="url(#eqDax)"/>
+          <polyline class="eq-line" points="20,240 71,197 122,153 173,146 224,134 275,103 326,85 377,67 428,57 479,40 530,35 580,30" fill="none" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <g fill="#0c0c11" stroke="#7dd3fc" stroke-width="2.5"><circle cx="20" cy="240" r="4.5"/><circle cx="71" cy="197" r="4.5"/><circle cx="122" cy="153" r="4.5"/><circle cx="173" cy="146" r="4.5"/><circle cx="275" cy="103" r="4.5"/><circle cx="377" cy="67" r="4.5"/><circle cx="479" cy="40" r="4.5"/><circle cx="580" cy="30" r="5"/></g>
+          <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#a8a6b5"><text x="50" y="184">+41.39</text><text x="100" y="140">+83.99</text><text x="146" y="133">Mar +90.84</text><text x="330" y="54">+166.92</text><text x="498" y="20">+202.17R</text></g>
+        </svg>
+        <div class="eq-x"><span>Start</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span></div>
+      </div>
+
+      <div class="block-title">Monthly performance <span class="hint">— all eleven months, March included</span></div>
+      <div class="bars reveal">
+        <div class="bar-row"><span class="bl">Jan</span><div class="bar-track"><div class="bar-fill" style="--w:97%"></div></div><span class="bv">+41.39R <small>· 14 tr · 92.9%</small></span></div>
+        <div class="bar-row"><span class="bl">Feb</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+42.60R <small>· 9 tr · 88.9%</small></span></div>
+        <div class="bar-row"><span class="bl">Mar</span><div class="bar-track"><div class="bar-fill dim" style="--w:16%"></div></div><span class="bv">+6.85R <small>· 9 tr · 44.4%</small></span></div>
+        <div class="bar-row"><span class="bl">Apr</span><div class="bar-track"><div class="bar-fill" style="--w:26%"></div></div><span class="bv">+10.95R <small>· 4 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">May</span><div class="bar-track"><div class="bar-fill" style="--w:72%"></div></div><span class="bv">+30.63R <small>· 12 tr · 83.3%</small></span></div>
+        <div class="bar-row"><span class="bl">Jun</span><div class="bar-track"><div class="bar-fill" style="--w:39%"></div></div><span class="bv">+16.65R <small>· 6 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Jul</span><div class="bar-track"><div class="bar-fill" style="--w:42%"></div></div><span class="bv">+17.85R <small>· 5 tr · 60%</small></span></div>
+        <div class="bar-row"><span class="bl">Aug</span><div class="bar-track"><div class="bar-fill" style="--w:22%"></div></div><span class="bv">+9.32R <small>· 3 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Sep</span><div class="bar-track"><div class="bar-fill" style="--w:39%"></div></div><span class="bv">+16.48R <small>· 4 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Oct</span><div class="bar-track"><div class="bar-fill" style="--w:12%"></div></div><span class="bv">+4.98R <small>· 2 tr · 100%</small></span></div>
+        <div class="bar-row"><span class="bl">Nov</span><div class="bar-track"><div class="bar-fill" style="--w:10%"></div></div><span class="bv">+4.47R <small>· 1 tr · 100%</small></span></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="block-title">Entry models — DAX’s own playbook</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Model</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td>OFS</td><td class="n">31</td><td class="n">+76.44R</td><td class="n">77.4%</td></tr>
+            <tr><td>LC-1 (M5)</td><td class="n">18</td><td class="n">+52.06R</td><td class="n">83.3%</td></tr>
+            <tr><td>S-C</td><td class="n">13</td><td class="n">+42.75R</td><td class="n">92.3%</td></tr>
+            <tr><td>LQ-EM4</td><td class="n">4</td><td class="n">+17.22R</td><td class="n">100%</td></tr>
+            <tr><td>LC-2A (M5)</td><td class="n">3</td><td class="n">+13.70R</td><td class="n">100%</td></tr>
+          </table></div>
+          <div class="block-title">Market phases</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Phase</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td>Phase A</td><td class="n">24</td><td class="n">+99.30R</td><td class="n">91.7%</td></tr>
+            <tr><td>Phase A2</td><td class="n">18</td><td class="n">+44.07R</td><td class="n">88.9%</td></tr>
+            <tr><td>Phase B</td><td class="n">11</td><td class="n">+28.70R</td><td class="n">72.7%</td></tr>
+            <tr><td>Phase C</td><td class="n">15</td><td class="n">+26.98R</td><td class="n">73.3%</td></tr>
+            <tr><td>Phase D</td><td class="n">1</td><td class="n">+3.12R</td><td class="n">100%</td></tr>
+          </table></div>
+          <div class="block-title">MTF order flow alignment</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Alignment</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td>With MTF order flow</td><td class="n">62</td><td class="n">+196.27R</td><td class="n">87.1%</td></tr>
+            <tr><td>Counter to MTF order flow</td><td class="n">7</td><td class="n">+5.90R</td><td class="n">57.1%</td></tr>
+          </table></div>
+        </div>
+        <div>
+          <div class="block-title">Weekdays</div>
+          <div class="bars reveal">
+            <div class="bar-row"><span class="bl">Mon</span><div class="bar-track"><div class="bar-fill" style="--w:78%"></div></div><span class="bv">+39.79R <small>· 75.0%</small></span></div>
+            <div class="bar-row"><span class="bl">Tue</span><div class="bar-track"><div class="bar-fill" style="--w:64%"></div></div><span class="bv">+32.42R <small>· 78.6%</small></span></div>
+            <div class="bar-row"><span class="bl">Wed</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+50.74R <small>· 93.3%</small></span></div>
+            <div class="bar-row"><span class="bl">Thu</span><div class="bar-track"><div class="bar-fill" style="--w:93%"></div></div><span class="bv">+47.04R <small>· 82.4%</small></span></div>
+            <div class="bar-row"><span class="bl">Fri</span><div class="bar-track"><div class="bar-fill" style="--w:63%"></div></div><span class="bv">+32.18R <small>· 90.9%</small></span></div>
+          </div>
+          <div class="block-title">Direction split <span class="hint">— 59 of 69 trades tagged</span></div>
+          <div class="split"><div class="a" style="width:76%">LONG +132.52R</div><div class="b">SHORT +41.05R</div></div>
+          <div class="split-legend"><span>Longs — 46 trades · 82.6% WR</span><span>Shorts — 13 trades · 92.3% WR</span></div>
+          <div class="block-title">Decision quality — the colour experiment</div>
+          <div class="tbl-wrap"><table>
+            <tr><th>Grade</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+            <tr><td><strong>Gray</strong> — clean, valid setup</td><td class="n">60</td><td class="n">+202.22R</td><td class="n">91.7%</td></tr>
+            <tr><td>Green — aggressive</td><td class="n">5</td><td class="n">+0.45R</td><td class="n">40.0%</td></tr>
+            <tr><td>Pink</td><td class="n">1</td><td class="n">+2.50R</td><td class="n">100%</td></tr>
+            <tr><td>Red — invalid</td><td class="n">2</td><td class="n">−2.00R</td><td class="n">0%</td></tr>
+            <tr><td>Blue — unclear</td><td class="n">1</td><td class="n">−1.00R</td><td class="n">0%</td></tr>
+          </table></div>
+          <p style="color:var(--ink2);font-size:14.5px;margin:14px 0 0">Every non-gray trade combined: <span class="mono" style="font-weight:700">−0.05R</span>. Gray trades never produced two losses in a row — and DAX’s only 4-loss streak, in March, ran 3 of 4 on non-gray decisions.</p>
+        </div>
+      </div>
+
+      <div class="callouts">
+        <div class="callout"><div class="v">49%</div><p><strong>Phase A pays for everything.</strong> 24 Phase A trades produced +99.30R — 49% of the entire log’s profit, at 91.7% WR.</p></div>
+        <div class="callout"><div class="v">50% WR</div><p><strong>The opening bleeds.</strong> DAX entries at 11:30–12:00 win only half the time and carry 5 of the log’s 11 losses. The midday window pays instead: 12:00–13:00 banked +121.46R.</p></div>
+        <div class="callout"><div class="v">57.1%</div><p><strong>Counter-flow fails.</strong> Trading against multi-timeframe order flow drops the win rate from 87.1% to 57.1%. Alignment is the edge.</p></div>
+      </div>
+    </article>
+
+    <!-- ===== AUD/USD — teal, TWO separate programmes ===== -->
+    <article class="show au reveal">
+      <div class="chrome"><i style="background:#fb7185"></i><i style="background:#fbbf24"></i><i style="background:#34d399"></i><span class="addr">backtest-logs · AUD/USD · two programmes · 2025 · Notion</span></div>
+      <div class="show-top">
+        <div><h3>AUD/USD <span class="tick">AU$</span></h3><div class="period">BACKTEST · 2025 · LONDON SESSION · TWO SEPARATE PROGRAMMES — NEVER MERGED</div></div>
+        <div class="big-r"><div class="v">+105.55R</div><div class="k">32 trades across both logs</div></div>
+      </div>
+      <p style="color:var(--ink2);font-size:15px;margin:14px 0 0;max-width:760px">AU$ runs as its own playbook — twice over. The M5/M15 programme is an LC-1 book; the M1 programme hunts expansion models on a one-minute chart. Different timeframes, different models, different behaviour — so they are reported separately, the way they were traded.</p>
+
+      <!-- AU$ programme 1 -->
+      <div class="subprog">
+        <div class="sub-head">
+          <div><h4>Programme 1 — <span class="tick">M5 &amp; M15</span></h4><div class="period">JAN – JUN 2025 · ENTRY TF M5 ON 22 OF 23 · RISK 1%</div></div>
+          <div class="big-r"><div class="v" style="font-size:clamp(30px,4.4vw,42px)">+64.55R</div><div class="k">23 trades · 82.6% win rate</div></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><div class="k">Average trade</div><div class="v">+2.81R</div></div>
+          <div class="stat"><div class="k">Avg win / avg loss</div><div class="v">+3.61R / −1.00R</div></div>
+          <div class="stat"><div class="k">Best / worst</div><div class="v">+7.76R / −1R</div></div>
+          <div class="stat"><div class="k">Longest win streak</div><div class="v">9 trades</div></div>
+        </div>
+        <div class="block-title">Equity curve — cumulative R by month</div>
+        <div class="eq-wrap reveal">
+          <svg viewBox="0 0 600 260" role="img" aria-label="AUD/USD M5 and M15 equity curve rising from 0 to +64.55R over six months">
+            <defs><linearGradient id="eqAu1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".35"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient></defs>
+            <g stroke="rgba(255,255,255,.06)"><line x1="20" y1="60" x2="580" y2="60"/><line x1="20" y1="120" x2="580" y2="120"/><line x1="20" y1="180" x2="580" y2="180"/><line x1="20" y1="240" x2="580" y2="240"/></g>
+            <path d="M20,240 L113,178 L207,161 L300,92 L393,87 L487,55 L580,30 L580,250 L20,250 Z" fill="url(#eqAu1)"/>
+            <polyline class="eq-line" points="20,240 113,178 207,161 300,92 393,87 487,55 580,30" fill="none" stroke="#5eead4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <g fill="#0c0c11" stroke="#5eead4" stroke-width="2.5"><circle cx="20" cy="240" r="4.5"/><circle cx="113" cy="178" r="4.5"/><circle cx="207" cy="161" r="4.5"/><circle cx="300" cy="92" r="4.5"/><circle cx="393" cy="87" r="4.5"/><circle cx="487" cy="55" r="4.5"/><circle cx="580" cy="30" r="5"/></g>
+            <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#a8a6b5"><text x="102" y="165">+19.10</text><text x="196" y="148">+24.40</text><text x="284" y="79">+45.49</text><text x="376" y="74">+47.09</text><text x="462" y="43">+56.79</text><text x="516" y="20">+64.55R</text></g>
+          </svg>
+          <div class="eq-x"><span>Start · 0R</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div>
+        </div>
+        <div class="block-title">Monthly performance</div>
+        <div class="bars reveal">
+          <div class="bar-row"><span class="bl">Jan</span><div class="bar-track"><div class="bar-fill" style="--w:91%"></div></div><span class="bv">+19.10R <small>· 7 tr · 85.7%</small></span></div>
+          <div class="bar-row"><span class="bl">Feb</span><div class="bar-track"><div class="bar-fill" style="--w:25%"></div></div><span class="bv">+5.30R <small>· 2 tr · 100%</small></span></div>
+          <div class="bar-row"><span class="bl">Mar</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+21.09R <small>· 5 tr · 100%</small></span></div>
+          <div class="bar-row"><span class="bl">Apr</span><div class="bar-track"><div class="bar-fill dim" style="--w:8%"></div></div><span class="bv">+1.60R <small>· 2 tr · 50%</small></span></div>
+          <div class="bar-row"><span class="bl">May</span><div class="bar-track"><div class="bar-fill" style="--w:46%"></div></div><span class="bv">+9.70R <small>· 6 tr · 66.7%</small></span></div>
+          <div class="bar-row"><span class="bl">Jun</span><div class="bar-track"><div class="bar-fill" style="--w:37%"></div></div><span class="bv">+7.76R <small>· 1 tr · 100%</small></span></div>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="block-title">Entry models</div>
+            <div class="tbl-wrap"><table>
+              <tr><th>Model</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+              <tr><td>LC-1 (M5)</td><td class="n">18</td><td class="n">+45.85R</td><td class="n">77.8%</td></tr>
+              <tr><td>LC-2A (M5)</td><td class="n">3</td><td class="n">+9.30R</td><td class="n">100%</td></tr>
+              <tr><td>M5 CE</td><td class="n">1</td><td class="n">+5.10R</td><td class="n">100%</td></tr>
+            </table></div>
+            <p style="color:var(--ink3);font-size:13px;margin:10px 0 0">Model logged on 22 of 23 trades. LC-1 carries this book — 18 of 23 trades.</p>
+            <div class="block-title">Probability grades</div>
+            <div class="tbl-wrap"><table>
+              <tr><th>Grade</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+              <tr><td><strong>HP</strong></td><td class="n">3</td><td class="n">+14.46R</td><td class="n">100%</td></tr>
+              <tr><td><strong>MP</strong></td><td class="n">17</td><td class="n">+49.59R</td><td class="n">88.2%</td></tr>
+              <tr><td><strong>LP</strong></td><td class="n">3</td><td class="n">+0.50R</td><td class="n">33.3%</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="block-title">Market phases</div>
+            <div class="tbl-wrap"><table>
+              <tr><th>Phase</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+              <tr><td>Phase C</td><td class="n">12</td><td class="n">+35.39R</td><td class="n">83.3%</td></tr>
+              <tr><td>Phase A</td><td class="n">6</td><td class="n">+16.26R</td><td class="n">66.7%</td></tr>
+              <tr><td>Phase A2</td><td class="n">4</td><td class="n">+10.40R</td><td class="n">100%</td></tr>
+              <tr><td>Phase B</td><td class="n">1</td><td class="n">+2.50R</td><td class="n">100%</td></tr>
+            </table></div>
+            <div class="block-title">Direction split — near-perfect balance</div>
+            <div class="split"><div class="a" style="width:50%">LONG +32.25R</div><div class="b">SHORT +32.30R</div></div>
+            <div class="split-legend"><span>Longs — 11 trades · 81.8% WR</span><span>Shorts — 12 trades · 83.3% WR</span></div>
+            <div class="block-title">Weekdays</div>
+            <div class="bars reveal">
+              <div class="bar-row"><span class="bl">Mon</span><div class="bar-track"><div class="bar-fill" style="--w:100%"></div></div><span class="bv">+18.80R <small>· 100%</small></span></div>
+              <div class="bar-row"><span class="bl">Tue</span><div class="bar-track"><div class="bar-fill" style="--w:15%"></div></div><span class="bv">+2.80R <small>· 100%</small></span></div>
+              <div class="bar-row"><span class="bl">Wed</span><div class="bar-track"><div class="bar-fill" style="--w:98%"></div></div><span class="bv">+18.35R <small>· 62.5%</small></span></div>
+              <div class="bar-row"><span class="bl">Thu</span><div class="bar-track"><div class="bar-fill" style="--w:64%"></div></div><span class="bv">+12.00R <small>· 80%</small></span></div>
+              <div class="bar-row"><span class="bl">Fri</span><div class="bar-track"><div class="bar-fill" style="--w:67%"></div></div><span class="bv">+12.60R <small>· 100%</small></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="note-box"><strong>The colour story flips here.</strong> On DAX, filtering to clean “gray” trades transformed the results. On this log, the non-gray trades (blue + yellow) netted <strong>+9.20R</strong> — the filter adds nothing. And Phase A, premium on EU$ and DAX, is this log’s weakest phase (66.7% WR); Phase C does the heavy lifting. Same trader, different market personality — measured, not assumed.</div>
+      </div>
+
+      <!-- AU$ programme 2 -->
+      <div class="subprog">
+        <div class="sub-head">
+          <div><h4>Programme 2 — <span class="tick">M1 EMs</span></h4><div class="period">JAN – FEB 2025 · ENTRY TF M1 ON 8 OF 9 · EXPANSION MODELS</div></div>
+          <div class="big-r"><div class="v" style="font-size:clamp(30px,4.4vw,42px)">+41.00R</div><div class="k">9 trades · 77.8% win rate</div></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><div class="k">Average trade</div><div class="v">+4.56R</div></div>
+          <div class="stat"><div class="k">Avg win / avg loss</div><div class="v">+6.14R / −1.00R</div></div>
+          <div class="stat"><div class="k">Best / worst</div><div class="v">+13.00R / −1R</div></div>
+          <div class="stat"><div class="k">Longest win streak</div><div class="v">4 trades</div></div>
+        </div>
+        <div class="block-title">Equity curve — cumulative R</div>
+        <div class="eq-wrap reveal">
+          <svg viewBox="0 0 600 260" role="img" aria-label="AUD/USD M1 EMs equity curve rising from 0 to +41R across January and February 2025">
+            <defs><linearGradient id="eqAu2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".35"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient></defs>
+            <g stroke="rgba(255,255,255,.06)"><line x1="20" y1="60" x2="580" y2="60"/><line x1="20" y1="120" x2="580" y2="120"/><line x1="20" y1="180" x2="580" y2="180"/><line x1="20" y1="240" x2="580" y2="240"/></g>
+            <path d="M20,240 L300,61 L580,30 L580,250 L20,250 Z" fill="url(#eqAu2)"/>
+            <polyline class="eq-line" points="20,240 300,61 580,30" fill="none" stroke="#5eead4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <g fill="#0c0c11" stroke="#5eead4" stroke-width="2.5"><circle cx="20" cy="240" r="4.5"/><circle cx="300" cy="61" r="4.5"/><circle cx="580" cy="30" r="5"/></g>
+            <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#a8a6b5"><text x="272" y="48">+34.90</text><text x="516" y="20">+41.00R</text></g>
+          </svg>
+          <div class="eq-x"><span>Start · 0R</span><span>Jan · 8 trades</span><span>Feb · 1 trade</span></div>
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="block-title">Entry models — a third model set</div>
+            <div class="tbl-wrap"><table>
+              <tr><th>Model</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+              <tr><td>LQ-EM2</td><td class="n">6</td><td class="n">+17.90R</td><td class="n">66.7%</td></tr>
+              <tr><td>LQ-EM4</td><td class="n">2</td><td class="n">+19.10R</td><td class="n">100%</td></tr>
+              <tr><td>CE .618</td><td class="n">1</td><td class="n">+4.00R</td><td class="n">100%</td></tr>
+            </table></div>
+            <div class="block-title">Months</div>
+            <div class="bars reveal">
+              <div class="bar-row"><span class="bl">Jan</span><div class="bar-track"><div class="bar-fill" style="--w:85%"></div></div><span class="bv">+34.90R <small>· 8 tr · 75%</small></span></div>
+              <div class="bar-row"><span class="bl">Feb</span><div class="bar-track"><div class="bar-fill" style="--w:15%"></div></div><span class="bv">+6.10R <small>· 1 tr · 100%</small></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="block-title">Phases &amp; grades</div>
+            <div class="tbl-wrap"><table>
+              <tr><th>Group</th><th class="n">Trades</th><th class="n">Total R</th><th class="n">Win rate</th></tr>
+              <tr><td>Phase C</td><td class="n">6</td><td class="n">+38.90R</td><td class="n">100%</td></tr>
+              <tr><td>Phase A2</td><td class="n">3</td><td class="n">+2.10R</td><td class="n">33.3%</td></tr>
+              <tr><td>MP grade</td><td class="n">6</td><td class="n">+32.50R</td><td class="n">83.3%</td></tr>
+              <tr><td>LP grade</td><td class="n">2</td><td class="n">+4.50R</td><td class="n">50.0%</td></tr>
+              <tr><td>HP grade</td><td class="n">1</td><td class="n">+4.00R</td><td class="n">100%</td></tr>
+            </table></div>
+            <p style="color:var(--ink2);font-size:14.5px;margin:14px 0 0">The log’s best trade — <span class="mono" style="font-weight:700">+13.00R</span> on LQ-EM4, 8 Jan 2025 — was taken <em>counter</em> to MTF order flow, the exact pattern that fails on DAX. With 9 trades, that’s a question to keep testing, not a rule to trade on.</p>
+          </div>
+        </div>
+        <div class="note-box"><strong>Small-sample honesty:</strong> this programme is 9 trades over five weeks — a January experiment with outsized winners (avg win +6.14R). Every figure above is real and logged, but no conclusion from 9 trades is final. Direction was never logged in this log’s template, so no direction split is shown — rather a gap than a guess.</div>
+      </div>
+
+      <div class="au-combined">
+        <div class="v">AU$ combined: <span class="pos">+105.55R</span> · 32 trades · 81.2% WR</div>
+        <p>Two separate programmes, summed for reference only. Every AU$ loss in both logs is exactly −1R — the cap was never exceeded, and never cut early either.</p>
+      </div>
+    </article>
+
+    <div class="mid-cta reveal">
+      <a class="btn btn-p" href="mailto:Rajwardhankr@outlook.com">Contact me about this research ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINDINGS ============ -->
+<section id="findings">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Research findings</span>
+      <h2>What 150 trades<br /><span class="grad">actually taught me</span></h2>
+      <p>Not opinions — patterns that survive being counted, across three instruments that refuse to behave the same way. Each one changed how the next session gets planned.</p>
+    </div>
+    <div class="find-grid">
+      <div class="find reveal"><div class="fv" style="color:var(--violet2)">17–0</div><h3>Confirmation is the edge</h3><p>Setups graded high-probability before entry — sweep, POI, confirmed CHoCH all present — won 17 of 17 on EUR/USD, averaging +4.48R. The grade predicts the outcome ordering exactly: HP &gt; MP &gt; LP.</p><div class="src">EUR/USD · Probability grades</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--blue)">+99.30R</div><h3>Phase A premium — with one rebel</h3><p>Phase A is the premium context on DAX (49% of all profit, 91.7% WR) and EUR/USD (7-for-7, avg +6.19R). On AUD/USD M5/M15 it’s the weakest phase — Phase C carries that book instead. Context is per-instrument.</p><div class="src">All logs · MTF phases</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--violet2)">12:00</div><h3>Midday prints, the open bleeds</h3><p>EUR/USD’s 12:00–12:30 window: +57.02R at 92.3%. DAX’s 12:00–13:00: +121.46R. DAX’s 11:30–12:00 opening window: a coin flip at 50% WR. Same session, opposite clocks.</p><div class="src">EU$ + DAX · Time windows</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--blue)">57.1%</div><h3>Counter-flow fails — usually</h3><p>DAX trades against MTF order flow won 57.1% and added +5.90R over 7 trades; with the flow, 87.1% and +196.27R. EUR/USD never traded counter-flow at all — 49 of 49 aligned.</p><div class="src">DAX · Order flow</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--teal)">−0.05R / +9.20R</div><h3>The colour filter flips</h3><p>On DAX, every non-gray (aggressive / invalid / unclear) trade netted −0.05R — remove them and the win rate jumps 84.1% → 91.7%. On AUD/USD M5/M15 the same filter removes +9.20R of profit. Discipline rules are local, not universal.</p><div class="src">DAX vs AU$ · Decision quality</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--teal)">18 of 23</div><h3>LC-1 is the quiet workhorse</h3><p>LC-1 (M5) beat the flagship CC5 on EUR/USD (92.3% vs 80.0% WR) and outright dominates the AUD/USD M5/M15 book — 18 of 23 trades, +45.85R. The unglamorous model does the heavy lifting twice.</p><div class="src">EU$ + AU$ · Entry models</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--green)">−1R</div><h3>A hard floor under every loss</h3><p>Across 150 trades, three instruments and four logs, no single trade ever lost more than −1R — while the best returned +15.66R. On AUD/USD every one of the 6 losses is exactly −1.00R: the cap held to the decimal.</p><div class="src">Combined · Risk</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--blue)">44.4%</div><h3>March, told honestly</h3><p>DAX’s drawdown month: 44.4% win rate, the log’s only 4-loss streak — 3 of those 4 on non-gray decisions. Gray-filtered, March is 80% WR and the loss streak never exceeds 1 anywhere in the log. It stayed in the data, and it’s why decision grading exists.</p><div class="src">DAX · March 2025</div></div>
+      <div class="find reveal"><div class="fv" style="color:var(--teal)">Mon 6/6</div><h3>Weekdays have personalities</h3><p>EUR/USD Mondays banked +63.85R; DAX Wednesdays won 93.3% for +50.74R; AUD/USD M5/M15 Mondays were perfect — 6 trades, 6 wins. Wednesday is where AU$ bleeds instead: 3 of its 4 losses.</p><div class="src">All logs · Weekdays</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BACKGROUND ============ -->
+<section id="background">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Background</span>
+      <h2>The short <span class="grad">version</span></h2>
+    </div>
+    <div class="bg-grid">
+      <div class="card reveal">
+        <h3>Experience</h3>
+        <div class="xp"><div class="when">2024 — NOW</div><div><h4>Independent FX Trader</h4><p>EUR/USD, AUD/USD and DAX, London session only. Systematic backtesting, journaling and weekly review — the work documented on this page.</p></div></div>
+        <div class="xp"><div class="when">2025 — NOW</div><div><h4>Moderator &amp; Trader Support — Private Trading Community</h4><p>Supporting a private community of 210+ members since January 2025, with 50+ traders guided personally on execution, platform and risk questions.</p></div></div>
+        <div class="xp"><div class="when">2025 — 2026</div><div><h4>Pro Trader / Trader Support — Traders Hive</h4><p>December 2025 – September 2026, in a trading community of 4,000+ members.</p></div></div>
+        <div class="xp"><div class="when">CURRENT</div><div><h4>Prop-Firm Trader (Trader Side)</h4><p>Currently in evaluation with Funding Pips; 3–4 funded-account challenges taken across firms.</p></div></div>
+        <div class="xp"><div class="when">NEXT</div><div><h4>Python for Quant — learning now</h4><p>Python basics in place, studying daily — the goal is automating this research pipeline and moving toward quantitative trading and my own trading software.</p></div></div>
+      </div>
+      <div class="card reveal">
+        <h3>At a glance</h3>
+        <div class="kv"><span class="k">Name</span><span class="v">Rajwardhan Kumar, 19</span></div>
+        <div class="kv"><span class="k">Based in</span><span class="v">Barh, Bihar, India</span></div>
+        <div class="kv"><span class="k">Available</span><span class="v">From 10 Nov 2026 · Remote</span></div>
+        <div class="kv"><span class="k">Education</span><span class="v">Class XII, CBSE — completed Mar 2026</span></div>
+        <div class="kv"><span class="k">College</span><span class="v">Deferred to 2027 — trading year</span></div>
+        <div class="kv"><span class="k">Languages</span><span class="v">English · Hindi (both fluent)</span></div>
+        <div class="kv"><span class="k">Daily tools</span><span class="v">TradingView · MT5 · Notion · Sheets</span></div>
+        <div class="kv"><span class="k">Email</span><span class="v"><a href="mailto:Rajwardhankr@outlook.com">Rajwardhankr@outlook.com</a></span></div>
+        <div class="kv"><span class="k">Phone</span><span class="v">+91 9204474404</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Employer FAQ</span>
+      <h2>Straight answers,<br />asked <span class="grad">often</span></h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>When can you start? <span class="plus">+</span></summary><div class="ans">From <strong>10 November 2026</strong>, remote, based in Barh, Bihar (IST). I trade the London session (roughly 10:45–15:00 IST including preparation and review); outside that block my day is fully available, and my routine is built to be re-planned around a role’s hours when one starts.</div></details>
+      <details class="reveal"><summary>Are these live trading results? <span class="plus">+</span></summary><div class="ans">No — and the page says so everywhere it matters. Every figure here is <strong>backtest data</strong>: structured backtests logged trade-by-trade in Notion and analysed in Google Sheets (London session). I also trade prop-firm evaluations — currently with Funding Pips — but I don’t dress backtest numbers up as live performance. The point of the logs is the research process: grading, slicing and acting on the data.</div></details>
+      <details class="reveal"><summary>Do you have a degree? <span class="plus">+</span></summary><div class="ans">No. I completed Class XII (CBSE) in March 2026 and deliberately deferred college entry to 2027 to give this trading year my full attention. What I offer instead of a degree is two-plus years of documented, data-verified market work — the 150 logged trades on this page.</div></details>
+      <details class="reveal"><summary>Do you know Excel? <span class="plus">+</span></summary><div class="ans">My daily analysis tool is <strong>Google Sheets</strong> — the breakdowns on this page were built there (pivots, conditional logic, R-multiple statistics). I haven’t worked in Excel itself yet, but the skill set transfers directly and I learn tools fast; I’d rather tell you that plainly than pad it.</div></details>
+      <details class="reveal"><summary>How is your Python? <span class="plus">+</span></summary><div class="ans">Basics only, honestly — I’m studying it daily now, with the specific goal of automating this backtest-and-review pipeline and moving toward quantitative trading. I’m not claiming quant skills I don’t have yet; this page shows the research discipline I’d be bringing while I build them.</div></details>
+      <details class="reveal"><summary>Why only the London session? <span class="plus">+</span></summary><div class="ans">It’s where my instruments move with intent and where all my data lives. EUR/USD, AUD/USD and DAX, one session, deeply known, beats three sessions shallowly known — the weekday and time-window splits in the logs are only possible because the sample is that focused.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA — violet returns ============ -->
+<footer class="cta" id="contact">
+  <div class="glow" style="width:540px;height:540px;bottom:-280px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,#6d28d9,transparent 70%);opacity:.5"></div>
+  <div class="wrap">
+    <span class="pill" style="position:relative"><span class="live"></span> Available for internships — from 10 Nov 2026 · Remote · India</span>
+    <h2>Let’s work<br /><span class="grad">together.</span></h2>
+    <p>150 backtested trades. +484.23R across three separate programmes. A −1R floor that never broke in any of them. If your team needs research discipline, data honesty and trader-side experience — my inbox is open.</p>
+    <div class="cta-btns">
+      <a class="btn btn-p" href="mailto:Rajwardhankr@outlook.com">✉ Rajwardhankr@outlook.com</a>
+      <a class="btn btn-g" href="tel:+919204474404">+91 9204474404</a>
+      <a class="btn btn-g" href="https://www.linkedin.com/in/rajwardhankr/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <button class="btn btn-g" id="copyBtn" type="button">Copy email</button>
+    </div>
+    <div class="copy-note" id="copyNote" aria-live="polite"></div>
+    <div class="fineprint">
+      <span>© 2026 Rajwardhan Kumar · Barh, Bihar, India</span>
+      <span>All performance figures on this page are <strong>backtest results</strong> from Notion trade logs, London session: EUR/USD Aug 2025 – Jan 2026 (49 trades) · DAX Jan – Nov 2025 (69 trades) · AUD/USD M5/M15 Jan – Jun 2025 (23 trades) · AUD/USD M1 EMs Jan – Feb 2025 (9 trades). Backtesting is research, not a promise of future returns.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* --- scroll reveals (opacity/translate only — data stays crisp) --- */
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.1 });
+    els.forEach(function(e){ io.observe(e); });
+    setTimeout(function(){ document.querySelectorAll('.reveal:not(.in)').forEach(function(e){ e.classList.add('in'); }); }, 1800);
+  })();
+
+  /* --- marquee: duplicate track for a seamless right-to-left loop --- */
+  (function(){
+    var t = document.getElementById('mqTrack');
+    if (t) t.innerHTML += t.innerHTML;
+  })();
+
+  /* --- count-up for the hero disc total (markup already holds the final value) --- */
+  (function(){
+    var el = document.querySelector('[data-count]');
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var target = parseFloat(el.getAttribute('data-count')), dec = parseInt(el.getAttribute('data-dec') || '0', 10);
+    var start = null, dur = 1600;
+    function frame(ts){
+      if (!start) start = ts;
+      var p = Math.min(1, (ts - start) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * e).toFixed(dec);
+      if (p < 1) requestAnimationFrame(frame); else el.textContent = target.toFixed(dec);
+    }
+    var io = new IntersectionObserver(function(en){
+      if (en[0].isIntersecting) { requestAnimationFrame(frame); io.disconnect(); }
+    }, { threshold: 0.4 });
+    io.observe(el);
+  })();
+
+  /* --- copy email --- */
+  (function(){
+    var btn = document.getElementById('copyBtn'), note = document.getElementById('copyNote');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      var email = 'Rajwardhankr@outlook.com';
+      function done(){ note.textContent = '✓ Copied — Rajwardhankr@outlook.com'; setTimeout(function(){ note.textContent = ''; }, 3200); }
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(email).then(done, done); }
+      else {
+        var ta = document.createElement('textarea'); ta.value = email; document.body.appendChild(ta);
+        ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done();
+      }
+    });
+  })();
+</script>
+</body>
+</html>

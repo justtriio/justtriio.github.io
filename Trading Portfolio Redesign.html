@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090a0d">
+<meta name="description" content="Riio — Independent trading research, quantitative analysis and systematic trading projects. 150 verified backtest trades, +484.23R across EUR/USD, DAX and AUD/USD research programmes.">
+<meta property="og:title" content="Riio — Research Beyond the Charts">
+<meta property="og:description" content="Independent trading research: 150 backtested trades, +484.23R, three instruments, four programmes — every figure computed from the logged trade records. Backtest results, clearly labelled.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23090911'/%3E%3Cpath d='M5 22 L12 14 L17 18 L27 7' stroke='%23a89acb' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Riio — Research Beyond the Charts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+ --bg:#090a0d;--bg2:#101217;--panel:#121419;--panel2:#181b22;
+ --line:rgba(225,228,238,.085);--line-v:rgba(169,155,204,.23);
+ --ink:#eeedf2;--ink2:#a5a5b0;--ink3:#737581;
+ --violet:#a89acb;--violet2:#b9add8;--mag:#c0b6d5;
+ --blue:#91a3bd;--blue2:#7185a4;--teal:#8daea7;--teal2:#6e928a;
+ --green:#73c6a0;--red:#d58d91;--amber:#c9ae78;
+ /* legacy aliases mapped onto the obsidian palette */
+ --bg-main:#090a0d;--bg-surface:#101217;--bg-elevated:#181b22;
+ --text:#eeedf2;--text-primary:#eeedf2;--muted:#a5a5b0;--text-secondary:#a5a5b0;--dim:#737581;
+ --violet-soft:#9689b4;--purple:#9bb9b0;--cyan:#a9b8ce;
+ --border-subtle:rgba(225,228,238,.085);
+ --font:'DM Sans',sans-serif;--display:'Space Grotesk',sans-serif;
+ --mono:'DM Mono',monospace;--width:1200px;
+ color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px;background:var(--bg)}
+body{
+ background:
+ radial-gradient(ellipse 78% 38% at 50% -14%,rgba(154,139,190,.085),transparent 72%),
+ linear-gradient(180deg,#0b0c10 0%,#090a0d 46%,#0b0c10 100%);
+ color:var(--text-primary);font-family:var(--font);line-height:1.6;overflow-x:hidden;
+ position:relative;isolation:isolate;
+}
+a{color:inherit;text-decoration:none}
+button,select{font:inherit}
+button{cursor:pointer}
+::selection{background:rgba(169,155,204,.38);color:#fff}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #b9add4;outline-offset:2px}
+.wrap{width:min(var(--width),calc(100% - 48px));margin:auto}
+.mono{font-family:var(--mono)}
+.eyebrow{display:inline-block;font:500 10px var(--mono);letter-spacing:.17em;text-transform:uppercase;color:#b8b5c2;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.section{padding:110px 0;border-top:1px solid var(--line)}
+.heading{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:40px}
+.heading h2{font:600 clamp(32px,4vw,49px)/1.1 var(--display);letter-spacing:-.055em;margin-top:12px}
+.heading p{max-width:390px;color:var(--muted);font-size:13px}
+.muted{color:var(--muted)}
+.small{font-size:11px;color:var(--dim)}
+/* Navigation */
+.nav{position:fixed;z-index:100;top:0;left:0;right:0;height:76px;background:rgba(9,10,13,.86);backdrop-filter:blur(22px);border-bottom:1px solid var(--line)}
+.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}
+.logo{font:700 26px var(--display);letter-spacing:-.09em}
+.logo span{color:var(--violet)}
+.nav-links{display:flex;align-items:center;gap:27px}
+.nav-links a{font-size:12px;color:var(--muted);transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links .nav-contact{border:1px solid var(--line-v);color:var(--violet2);padding:9px 13px;border-radius:7px}
+.menu{display:none;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:8px 12px}
+/* Hero */
+.hero{min-height:750px;padding:160px 0 85px;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;top:0;right:-10%;width:65%;height:700px;background:radial-gradient(ellipse,rgba(154,139,190,.07),transparent 65%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:60px;align-items:center;position:relative}
+.status{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.035);border:1px solid rgba(190,179,218,.19);border-radius:30px;padding:8px 12px;color:#d0cbd9;font:10px var(--mono);margin-bottom:28px}
+.dot{height:7px;width:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.hero h1{font:600 clamp(50px,7vw,88px)/.98 var(--display);letter-spacing:-.075em}
+.gradient{color:#c0b5d8}
+.hero-copy{max-width:520px;color:var(--muted);font-size:15px;margin:25px 0 14px}
+.hero-note{max-width:520px;color:var(--dim);font-size:11.5px;margin:0 0 30px}
+.actions{display:flex;flex-wrap:wrap;gap:11px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;padding:13px 18px;font-size:12px;font-weight:700;transition:.2s}
+.btn:hover{transform:translateY(-3px)}
+.primary{background:#b4a8d0;color:#17151c;border:1px solid #b4a8d0}
+.primary:hover{background:#c5badc;border-color:#c5badc}
+.secondary{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.025)}
+.secondary:hover{border-color:rgba(190,179,218,.28);background:rgba(255,255,255,.065)}
+.hero-meta{display:flex;gap:25px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:50px;padding-top:18px;color:var(--dim);font:9px var(--mono);letter-spacing:.12em}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:26px}
+.hero-stat{border-top:2px solid var(--violet);padding-top:10px}
+.hero-stat b{font:600 21px var(--display);letter-spacing:-.04em;display:block}
+.hero-stat span{font:9px var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.hero-art{height:410px;position:relative;display:grid;place-items:center;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:radial-gradient(circle at center,rgba(154,139,190,.13),transparent 53%),linear-gradient(145deg,#14151b,#0c0d11)}
+.hero-art:before,.hero-art:after{content:"";position:absolute;border:1px solid rgba(190,179,218,.16);border-radius:50%;width:270px;height:270px;animation:spin 28s linear infinite}
+.hero-art:after{width:360px;height:360px;border-style:dashed;animation-direction:reverse;opacity:.15}
+@keyframes spin{to{transform:rotate(360deg)}}
+.core{z-index:2;width:125px;height:125px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 38%,#292631,#14151b 72%);border:1px solid rgba(190,179,218,.22);box-shadow:0 0 52px rgba(0,0,0,.32);color:#d6cdea;font:700 40px var(--display);letter-spacing:-.1em}
+.orbit-label{position:absolute;z-index:3;background:rgba(19,20,26,.9);border:1px solid rgba(190,179,218,.17);border-radius:6px;padding:8px 11px;color:#d0cbd9;font:9px var(--mono);box-shadow:0 12px 34px rgba(0,0,0,.35)}
+.o1{top:17%;left:9%}.o2{top:25%;right:8%}.o3{bottom:22%;left:10%}.o4{bottom:15%;right:9%}
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.metric{padding:21px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.metric-label{font:10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.metric-value{font:600 31px var(--display);margin:11px 0 2px;letter-spacing:-.05em}
+.metric-note{font-size:10px;color:var(--dim)}
+/* Dashboard */
+.filters{display:flex;flex-wrap:wrap;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:13px}
+.filters label{font:9px var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase;display:flex;flex-direction:column;gap:6px}
+.filters .grow{flex:1;min-width:170px}
+select,input[type="date"],input[type="text"]{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;color:var(--text);font:11px var(--mono)}
+.filters select,.filters input{min-height:34px}
+.btn-reset{align-self:flex-end;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 13px;color:var(--muted);font:10px var(--mono);min-height:34px}
+.btn-reset:hover{border-color:var(--violet);color:var(--text)}
+.dash-grid{display:grid;grid-template-columns:1.55fr .8fr;gap:13px;margin-top:13px}
+.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:23px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:23px}
+.panel-title{font:600 14px var(--display)}
+.panel-sub{font:9px var(--mono);color:var(--dim);margin-top:4px}
+.chart{height:240px;width:100%;position:relative}
+canvas{width:100%;height:100%;display:block}
+.chart-legend{display:flex;gap:20px;color:var(--muted);font:9px var(--mono);margin-top:10px;flex-wrap:wrap}
+.legend{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;background:var(--violet)}
+.legend.red{background:var(--red)}
+.readout{font:10px var(--mono);color:var(--violet);min-height:16px;margin-top:8px}
+.side-stack{display:grid;gap:13px}
+.stat-list{margin-top:13px}
+.stat-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:11px}
+.stat-row:last-child{border:0}
+.stat-row span:first-child{color:var(--muted)}
+.stat-row span:last-child{font:11px var(--mono);text-align:right}
+.positive{color:var(--green)!important}.negative{color:var(--red)!important}
+.note{font-size:10px;color:var(--dim);line-height:1.7;margin-top:15px}
+.empty{display:none;background:var(--panel);border:1px dashed var(--line-v);border-radius:12px;padding:30px;text-align:center;color:var(--muted);font-size:13px;margin-top:13px}
+.heatmap{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.heat-cell{border-radius:5px;min-height:52px;background:#1b1d23;display:grid;place-items:center;font:9px var(--mono);color:var(--ink);text-align:center;padding:4px 2px}
+.heat-cell.pos{background:rgba(115,198,160,.16)}.heat-cell.neg{background:rgba(213,141,145,.16)}.heat-cell.zero{background:#17181d}
+details.defs{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 23px;margin-top:13px}
+details.defs summary{cursor:pointer;font:600 13px var(--display);min-height:30px;display:flex;align-items:center}
+details.defs ul{margin:12px 0 2px;padding-left:17px}
+details.defs li{font-size:11.5px;color:var(--muted);margin-bottom:7px;line-height:1.65}
+details.defs li b{color:var(--text)}
+/* Research programmes */
+.prog{margin-top:13px}
+.prog-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:6px}
+.prog-head h3{font:600 22px var(--display);letter-spacing:-.03em;margin-top:8px}
+.prog-head .sub{color:var(--muted);font-size:12px;margin-top:4px}
+.prog-stats{display:flex;gap:24px;flex-wrap:wrap}
+.prog-stats div b{font:600 20px var(--display);letter-spacing:-.03em;display:block}
+.prog-stats div span{font:9px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.pdot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:8px;vertical-align:middle}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 38px}
+.cols h4{font:500 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--violet);margin:18px 0 7px}
+.cols p,.cols li{color:var(--muted);font-size:12.5px;line-height:1.7}
+.cols ul{margin:0;padding-left:16px}
+.cols li{margin-bottom:6px}
+.cols li b,.cols p b{color:var(--text)}
+.sample-flag{display:inline-block;padding:4px 8px;border-radius:4px;background:rgba(213,141,145,.10);color:var(--red);font:9px var(--mono);margin-left:9px;vertical-align:middle}
+/* Research cards (case studies) */
+.research-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.research-card{padding:24px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,rgba(23,25,31,.96),rgba(16,18,23,.98));transition:.25s}
+.research-card:hover{transform:translateY(-3px);border-color:rgba(190,179,218,.28)}
+.card-index{color:var(--violet);font:10px var(--mono)}
+.tag{display:inline-block;padding:5px 8px;border-radius:4px;background:rgba(255,255,255,.035);border:1px solid rgba(190,179,218,.19);color:#d0cbd9;font:9px var(--mono);margin:22px 0 12px}
+.research-card h3{font:600 19px var(--display);margin-bottom:9px}
+.research-card p{font-size:12px;color:var(--muted);min-height:60px}
+.card-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font:9px var(--mono);color:var(--violet)}
+/* Methodology */
+.method-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:65px}
+.method-intro h2{font:600 42px/1.1 var(--display);letter-spacing:-.06em;margin:14px 0 18px}
+.method-intro p{font-size:13px;color:var(--muted)}
+.steps{border-top:1px solid var(--line)}
+.step{display:grid;grid-template-columns:50px 1fr;gap:15px;padding:20px 0;border-bottom:1px solid var(--line)}
+.step-num{color:var(--violet);font:11px var(--mono)}
+.step h3{font:600 15px var(--display);margin-bottom:4px}
+.step p{font-size:11px;color:var(--muted)}
+/* Projects */
+.project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.project{padding:24px;border:1px solid var(--line);background:var(--panel);border-radius:12px}
+.project-icon{color:var(--violet);font-size:19px;margin-bottom:15px}
+.project h3{font:600 17px var(--display);margin-bottom:8px}
+.project p{font-size:12px;color:var(--muted)}
+.tech{display:flex;gap:6px;flex-wrap:wrap;margin-top:17px}
+.tech span{font:9px var(--mono);color:#d0cbd9;background:rgba(255,255,255,.035);border:1px solid rgba(190,179,218,.19);padding:5px 8px;border-radius:4px}
+/* Tables */
+.table-wrap{overflow-x:auto}
+.explorer-scroll{max-height:440px;overflow-y:auto;overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap;font:10px var(--mono)}
+th{text-align:left;color:var(--dim);font-weight:400;padding:13px;border-bottom:1px solid var(--line)}
+td{padding:14px 13px;border-bottom:1px solid var(--line);color:#d2cfdb}
+tbody tr:hover{background:#ffffff04}
+thead th{position:sticky;top:0;background:var(--panel);z-index:2}
+/* About / contact */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-art{min-height:310px;border:1px solid var(--line);border-radius:15px;display:grid;place-items:center;background:radial-gradient(circle,rgba(169,155,204,.10),transparent 65%),var(--panel)}
+.about-art span{font:700 80px var(--display);letter-spacing:-.1em;color:var(--violet);text-shadow:0 0 55px rgba(169,155,204,.30)}
+.about-copy h2{font:600 40px/1.1 var(--display);letter-spacing:-.05em;margin:13px 0 17px}
+.about-copy p{font-size:13px;color:var(--muted);margin-bottom:13px}
+.about-copy p b{color:var(--text)}
+.contact-box{padding:48px;border:1px solid rgba(190,179,218,.28);border-radius:16px;background:radial-gradient(ellipse at 90% 0%,rgba(154,139,190,.10),transparent 55%),var(--panel);display:flex;justify-content:space-between;align-items:center;gap:30px}
+.contact-box h2{font:600 clamp(30px,4vw,45px)/1.1 var(--display);letter-spacing:-.055em;margin:10px 0}
+.contact-box p{font-size:12px;color:var(--muted);max-width:470px}
+.copy-msg{font:10px var(--mono);color:var(--green);min-height:16px;margin-top:12px}
+footer{padding:25px 0;border-top:1px solid var(--line);color:var(--dim);font:9px var(--mono)}
+.footer-note{font-size:10.5px;color:var(--dim);line-height:1.7;max-width:820px;margin-bottom:16px;font-family:var(--font)}
+.footer-note b{color:var(--muted)}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.footer-links{display:flex;gap:19px}
+.footer-links a:hover{color:var(--violet)}
+.reveal{opacity:0;transform:translateY(18px);transition:.65s ease}
+.reveal.visible{opacity:1;transform:none}
+/* Card surfaces — obsidian */
+.panel,.metric,.research-card,.project,.filters,.contact-box,details.defs,.empty{
+ background:linear-gradient(145deg,rgba(23,25,31,.96),rgba(16,18,23,.98));
+ border:1px solid var(--line);
+ box-shadow:0 14px 38px rgba(0,0,0,.16);
+ transition:border-color 220ms ease,transform 220ms ease,box-shadow 220ms ease,opacity 220ms ease;
+}
+.panel:hover,.metric:hover,.research-card:hover,.project:hover{
+ border-color:rgba(190,179,218,.28);transform:translateY(-3px);
+ box-shadow:0 18px 42px rgba(0,0,0,.24);
+}
+.scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;background:#b9add8;z-index:200;pointer-events:none}
+@media(max-width:850px){
+ .hero-grid,.method-grid,.about-grid{grid-template-columns:1fr}
+ .hero-art{height:340px}.dash-grid{grid-template-columns:1fr}
+ .research-grid{grid-template-columns:repeat(2,1fr)}
+ .method-grid,.about-grid{gap:35px}
+ .cols{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+ .wrap{width:calc(100% - 32px)}
+ .nav-links{display:none;position:absolute;top:76px;left:0;right:0;background:var(--bg2);padding:22px 24px;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:17px}
+ .nav-links.open{display:flex}.menu{display:block}
+ .hero{padding:135px 0 70px;min-height:auto}
+ .hero h1{font-size:53px}.hero-art{height:300px}
+ .hero-meta{gap:13px 20px}
+ .hero-stats{grid-template-columns:repeat(2,1fr)}
+ .section{padding:78px 0}
+ .heading{display:block}.heading p{margin-top:13px}
+ .metrics{grid-template-columns:repeat(2,1fr)}
+ .metric{padding:16px}.metric-value{font-size:25px}
+ .research-grid,.project-grid{grid-template-columns:1fr}
+ .contact-box{display:block;padding:29px 23px}.contact-box .btn{margin-top:10px}
+ .about-art{min-height:240px}
+ .about-copy h2,.method-intro h2{font-size:34px}
+ .panel{padding:17px}
+ .heatmap{grid-template-columns:repeat(4,1fr)}
+ .opt-col{display:none}
+ td,th{padding:10px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+ .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+<header class="nav">
+ <div class="wrap nav-inner">
+  <a class="logo" href="#home">riio<span>.</span></a>
+  <nav class="nav-links" id="navLinks" aria-label="Main">
+   <a href="#performance">Performance</a>
+   <a href="#research">Research</a>
+   <a href="#trades">Trades</a>
+   <a href="#methodology">Methodology</a>
+   <a href="#projects">Projects</a>
+   <a href="#about">About</a>
+   <a href="#contact" class="nav-contact">Contact ↗</a>
+  </nav>
+  <button class="menu" id="menu" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+ </div>
+</header>
+
+<main id="home">
+<section class="hero">
+ <div class="wrap hero-grid">
+  <div>
+   <div class="status"><span class="dot"></span> INDEPENDENT RESEARCH · TRADING SYSTEMS</div>
+   <div class="eyebrow">Market research / data / systematic thinking</div>
+   <h1>I don't predict.<br>I <span class="gradient">investigate.</span></h1>
+   <p class="hero-copy">I'm Rajwardhan Kumar — an independent FX &amp; index trader (EUR/USD, AUD/USD, DAX, London session only) studying market behaviour through structured trading, data-driven research and systematic thinking. Turning observations into testable ideas — and ideas into repeatable processes.</p>
+   <p class="hero-note">Every figure on this page is a <b>backtest</b> result computed from my own logged trade records — never presented as live performance.</p>
+   <div class="actions">
+    <a class="btn primary" href="#research">Explore my research ↗</a>
+    <a class="btn secondary" href="data:application/octet-stream;base64,JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNiAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YxIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKMyAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMiAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vd3d3LmxpbmtlZGluLmNvbS9pbi9yYWp3YXJkaGFua3IpCj4+IC9Cb3JkZXIgWyAwIDAgMCBdIC9SZWN0IFsgMjYyLjYzMTUgNzUzLjIyMzMgMzcxLjU5MzUgNzYzLjU0MzMgXSAvU3VidHlwZSAvTGluayAvVHlwZSAvQW5ub3QKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vdHJhZGluZ3BvcnRmb2xpby5ub3Rpb24uc2l0ZS9UcmFkaW5nLVBvcnRmb2xpby00MGNlNDFkNTQ3YWY4MTcxYWUwNmY2ZWE1OTU2MGM1OSkKPj4gL0JvcmRlciBbIDAgMCAwIF0gL1JlY3QgWyA0MTQuOTM3NSA3NTMuMjIzMyA1MTYuMjYyNyA3NjMuNTQzMyBdIC9TdWJ0eXBlIC9MaW5rIC9UeXBlIC9Bbm5vdAo+PgplbmRvYmoKNiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1PYmxpcXVlIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMyAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0Fubm90cyBbIDQgMCBSIDUgMCBSIF0gL0NvbnRlbnRzIDExIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAKICAvVHJhbnMgPDwKCj4+IC9UeXBlIC9QYWdlCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTAgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9BdXRob3IgKFJhandhcmRoYW4gS3VtYXIpIC9DcmVhdGlvbkRhdGUgKEQ6MjAyNjExMDMwODQyNDYrMDUnMDAnKSAvQ3JlYXRvciAoXCh1bnNwZWNpZmllZFwpKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAyNjExMDMwODQyNDYrMDUnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAoXCh1bnNwZWNpZmllZFwpKSAvVGl0bGUgKFJhandhcmRoYW4gS3VtYXIgXDIwNCBDVikgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxMCAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDcgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAzNDYyCj4+CnN0cmVhbQpHYiE7ZmdOKSNqJnEvKS1vWz5GNUplZCtPamxtPi8nLCcnaSMudVRoR288QFhBbThzJCxLWXRIbydwQTtrXnA8KSYzRWxVRnJATSRjI2cvV2whRTBqTE1abExrJm1zUEg5XDo5Qis/cFNOTWtrNFE7P09ebEFvPE5xb1sjTnFAMExZRFYuLlxnK0JBYUhRTVVtZjlUby5TWWVjVHBVOUkzPloubjBSKyFMTm5TI1NOJmhaMHJdbkMxZSJlOCcyRWglbD5uJkdJWkw+PlhURykqYmxoK1JUbElGMChMVlhabC1yWFlSJE8rVVFMaiotaScvVXBKT2hmMmdvWjk1PlAyQiQqYClnOC1tLSgvTys5JWUlWikkIm5OM2tLKk8vXEAqXlhCPDdRTlJIb2RXZUErOFdFXyImODBlXzJDTzIodUIoVFpWJ2hhND1pZnQtbGRsakVuZSNPdFcyWSM3amMxYycscihJS1JnL2NaTmlGak5CXTU5RGZhM1UjcWNkXVUmbiY6ZnIzWHFmSzBGMGZZTkN0X1BhJDFiWl9sWko/OSwsXlk0TGBqWUFpIiNIPDVkT3AodEI+dGtGU1lcY0QiUDk/Xlc3N1BkZjQzL2cwSkxOXkZpPXBBTDxHNl1DSkUsaTxCUFdlRFkuamZqVFVzL2grNjxwLmNySTcrWGpJZypfYkFMUVdPKyJoW2JbRGhDMmxhQkRVLXVVYU4/SDsuPktgK1ombj1CWTRYMGx1NDJWaGxlVmdXR0lyOXUwazFHI0o1SFdKMiw9I1BhaGc6UClSV0Q3cyQ1J0woVGFaLHVwYyFKIiNJUT9fVDdZPEBcaC9hSz8/WFJzVD5sXy9QSllxJi0za0tnQWVVYkc6YWA0RTFZcl1uLCopSFROXWtkTisyRUAxaSlnPEctXWhiSUsoJ1B0WEoxaW9oVTRmQ0FuU2FZJkhpQD1zRitWRjhuSG5SKl5MOzBrKl9lVzVmdURXdWNBJz5dYlM4c3BxZTAiWT1BLzQtJ2I9SGEiOFh0PFomJnFfNjMnLzc6VypwRyFcMHVaZ2U4TDFKcihubFQsb2kqPyY7MCRNN0RUUWRYdCY2NkhObUFhXl41dSFqXClsR0xLXDUtTzlqWE8iQ2wiRStfVmduOjs6NzNFKSwlNys6SD45YGdjQExkX3VuNjNzNiVHbGhbZyVTSiplaTtqM1lkWzVRPz1cNSs8KG5mSHAqa288L3AkMSY/bVVbSW9CZGxjW3FjPnNGMmNwTzxjOixoK2VCRSMuJ2JCbFM4YCVCamguN2I7UFlyI2w+Yl9NKnFrW0gmLSomX19AYVJsMVNMVi91LSI0dW5QMkRwKl9MXU9YJyE/KE0sMEAlQ3Bvclw3KWprZUFEU1I2aDdMNig4YkQ6az5MckhXVE5Cb00jQ3ROWTUtZVhsRFAuP2I/Q2VmUDMyRyMoZ2ArWmM7P0dJVVcmcF0pPE1YYmE4WnNbLFNgZmI1KGQ4ZCwpM1JMUzBNb2hncElvMT5vInJJYUoyQSdfZi5bQmYzZCxUPSQ5WEZET2RFZzVoVzRNVmQ9O0xsSW8vakkkODxaKCtrS3NdXy1nWy1kbjszPEpDX2kmOyxwOnVuMEc+UiJac10vITwjVE0kJWh1VmRqRidGaT1HUzZbISkqJDksYldcVG4yVFFBOSEpZlMhXixmUEdkcSF0S2lRb3FATSpTRkpGTVBULmZqTj5dSnVNRSpaXFFWU0RTKUIpO3BEY29sKE5GUj80NUw6MWJ1XFs5TTNiN0BkMXA5ZSc0OjZYUidSYyspV2tvYzZHcT9HXzs1PGVNQTs2Yl9aImcyKWsoWFc0KkJEUG5mSzZnVl0qbS9NYDdeX1NWMCklMDQxPUo0SmdhZUZPbT91Qyk/Y14lKXRJcE1gJktEc3RIcysjN0gwXUc5TmlvSlstQUNjR2wxaGlCK0lkc0A7MGdxRWZJXFI/VUJgLmQjJCVzZDcpSk8/V0c4ZyUrOV9cWUpcIiY/TkxYWCRZMyJKLVBdcVUoYzpbZ3VQSjsraUQjbHRZL1VaO0QoUlBzclolTTdGdDZyUSFDRCJRP2lxPEc9akFrYWhkSXBALGE6M0R0IlZHRldIMi9VWiFEL0tmI0BSVj1ITkg4YCUtcDJoazBdZVBNSz42YDo2L0dkImlGN0AuZC4sbCY4YW0qU0I/OSwwZUczIkZHWGlWbUUmIS1HPzZuNUQlWWMqOk1ZXEZxLDghUVtCViozJSkzN0llMDRSRV9PSDBMZ0NbUGVXMCpqQ1JNJUVYXmldQl0hOTgjSDVNb0ItQyFnMDxnVE9BTWwmVj0+YkxzMjtFKDRNTTBgXiE0cT5cRFQlanUkbDM4QmFubm11MWdxUkF0XW5CW3E4IVRKay9FO0c4c0FlNzpsSltyVCRMTHRqLjRkaiwoUmAlK2JxPjByZFYmbnB0ZUctVG9CMlxOSXVfYSxvQmRbczFUPFMxdChjPEEiMiwxX1lvUCwzIUhDOytZanI1Y2NlTSVDak5LKG90K0VMTVVkaCZrNVE4LDhcNERYQHI0Olg+WTc4ZXVcbkc2NiRsYFVtJC5FZDVuJT5FK05dOlg1QGs1LG1WZSZSWGknUktuWXJvSV1yb3FwTUdINzI3YXFTY3RMWWxjKm9TOD0rKmxkO19BI0UlVipWK0w9YD47UDlkdXI3LEMyI0RBXFBQZidBaFY0aW91LSwsZ1xScDcvNGoxdDsoWDhUb2svRG8haE5qJVRhOG05PDFIL1dtR2IrVjROOUMvNW5JdEQ2QidWcy5vLXVMST9iQWxII208dXFIIl9IMkVjb0tUZT5hXEZbTVZTZ1YnY0I/VEJaYTA6MDlCQm01WGxbKkM9R2FnIlVFLzVZJWFHX0wjMGk4XjNTJmEqQFZcLSNOZk5dZUY8Zz9HNFdcWkBAXWFcV2hpMFgpMmtWRTNRbkppVTRdXytkVWJPOUxXQDdIPSFbNV8/aEUoPlQvXV4kZ00rP3FaYmMtXzxqYV0yWGM4K2w/QFBNQDYqTD1db29EaTMrZCdNMjMuOlgqXk01ISRrTnNlSkQ2JllQSUBSLiZoTVZvVEEoLGhzMWhaPi9YaFJKVFkxZjhERnRqQGAvaiJNRVxFKVAtQHVbKUtyI2BsLVpXMik9Mk5tZT9aKUhOYE9gclctUkYiPiUiL1ReUUw1My9iMUUqO3VQUGNAdDQiL1pYOVFnVGxTNDpqbGBYKm5dXEYqVEgyVzo3NVElQHJYT1NKLlBoSG4nOmtkanVbb2FMZj5cR0ctaGY+JFYyamA0JFVGcG91Zko+dXN1TFMrSFIpWVFdIm1kVGwvIT9zUHRFdFwlMGphY0pUPD1VcElsdFgpJWM3XkMqY1BQRkI0LSsmVSM7azJ1MUpeISVVJFo/WFVOWD4vPjRMNSpNZUIvOiFjVVomJ3I8M2k6bkVAT0AvNiYsPVxERU9aT29SRUdJPkFIJjtfdFtCLiVwQVZfQDhlT3NQdElBXUxMIkQjOCJSYjRFMSg3RFlANzBfIkFcPls4XXFWPkZPbFwmbixobCsuSUFwYC1OJG1eJVQ2MyMnSUVkUGpmTElILz5fJW9VXD46ODloKXMkK1ZWUnNRKWowPysuSDEjSSwiIjxARlFyOCw1MV8lVy4vO107LnBsL25lSE5UcC1QSVU9J0wpYjQ3KzBPVWsjcSlJal4wPkReU1oiZmNpOGJ0aGlXaWV1bmUobkYkOl9QWCk2KVhhQmlqMmdVInJPNiciLXVCNC8tPVZDIzAzRyJxJV9ETmBxaUtHJS9WbVg0PyxQSSpLXjVdUF1tPnQ/MEBnSUA/NEVVOj5ZLWRqaCI1Jz5gSU5kRkswQk5xMFU4SF4uZFgoNExLRGQsIVkzRU9UMjlfaWJWU2NHYi5yL2ZmQlQlMzk/QzZVV11dPjkmPjVLNXBJOShSQC4sU29aTl1sYTcpKmZmKFBVYXJcVCFgKDRvayhIJGciLjFcMzA/N0lfKTNGcDpKMWYnO01MZU1YPWFdJmlXLEMuSV1wKjRdMVM9I3IyOjxvV24nUTBHR25qYCUoSUxMSjJVSE5payQyblRzdD81XzAxKnJvSTBKNik0UUxlL0olVVFrWElXTSdmWm9zS1RYVl8jKyZCZmc1cS9xOVdwVjZOaE1XbmZuTktDZU8uXz4uSmReYHVZY0pqY05CbmZjdT1oSHA8Nlo7LGA+YlREODg/JnFlPTF1PE5PZkBRSGVoa0FWMGZITmI4Zk1DSC5TN1IsbDk7SXJpVjdKNyJwRGUmYGowZ1VLV09kZEc5dUhIZ1whSDtlNXE5dUBsPSo0QTJxT1onUk9aVE1WQFVSRjpJYlw+TGFBU1IpQk1cI1IlU1lPZylVXjw+VFUsTl1yMTt1MzxxX1cpO3AyY0RzPSRhYyNwdGMhJVFALl1hcDpLRzBxQzE7J0tQJTw/WihpZSshRGVsYF8lWkciKzBWQjV1ajlEX08oRm8pM2doUT43UT9FMVJCRm9ERzgoSGgvSjRMRWA+QUpTLFomYic2aE9IaEtwbzg3K0I0U1xWUk0zMipFRFAwZTsvRHF1cF0pTFVIS0gwOkQsKWU2MltWY1dtI1VIY2Vgfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCAxMgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDExMiAwMDAwMCBuIAowMDAwMDAwMjE5IDAwMDAwIG4gCjAwMDAwMDAzMzEgMDAwMDAgbiAKMDAwMDAwMDUyMyAwMDAwMCBuIAowMDAwMDAwNzYyIDAwMDAwIG4gCjAwMDAwMDA4NzcgMDAwMDAgbiAKMDAwMDAwMTEwNiAwMDAwMCBuIAowMDAwMDAxMTc1IDAwMDAwIG4gCjAwMDAwMDE0NjkgMDAwMDAgbiAKMDAwMDAwMTUyOSAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw5YWMzOWQ1ZDcxZDRmZDIxOGFmZmRiNDdjYTBmMTVlNz48OWFjMzlkNWQ3MWQ0ZmQyMThhZmZkYjQ3Y2EwZjE1ZTc+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDkgMCBSCi9Sb290IDggMCBSCi9TaXplIDEyCj4+CnN0YXJ0eHJlZgo1MDgzCiUlRU9GCg==" download>View CV (PDF)</a>
+    <a class="btn secondary" href="https://github.com/justtriio" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a class="btn secondary" href="#contact">Get in touch</a>
+   </div>
+   <div class="hero-stats">
+    <div class="hero-stat"><b id="hsTrades">150</b><span>Backtest trades</span></div>
+    <div class="hero-stat"><b id="hsNet">+484.23R</b><span>Net backtest R</span></div>
+    <div class="hero-stat"><b id="hsWin">84.7%</b><span>Win rate · 127W / 23L</span></div>
+    <div class="hero-stat"><b>−1R</b><span>Worst single trade</span></div>
+   </div>
+   <div class="hero-meta"><span>01 / MARKET STRUCTURE</span><span>02 / DATA ANALYSIS</span><span>03 / SYSTEM DEVELOPMENT</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+   <span class="orbit-label o1">MARKET STRUCTURE</span>
+   <span class="orbit-label o2">DATA</span>
+   <span class="orbit-label o3">RESEARCH</span>
+   <span class="orbit-label o4">SYSTEMS</span>
+   <div class="core">R.</div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="performance">
+ <div class="wrap">
+  <div class="heading reveal">
+   <div><div class="eyebrow">01 / Performance analytics</div><h2>Evidence over assumptions.</h2></div>
+   <p>Every metric and chart is computed in your browser from the 150 per-trade records in my logs. Filter by instrument, programme, model, direction or date — everything recalculates from the same rows. Nothing is hard-coded.</p>
+  </div>
+
+  <div class="filters" role="group" aria-label="Dashboard filters">
+   <label>Instrument<select id="fInst" aria-label="Filter by instrument"><option value="">All instruments</option><option>EU$</option><option>DAX</option><option>AU$</option></select></label>
+   <label>Programme<select id="fProg" aria-label="Filter by programme"><option value="">All programmes</option></select></label>
+   <label>Model<select id="fModel" aria-label="Filter by model"><option value="">All models</option></select></label>
+   <label>Direction<select id="fDir" aria-label="Filter by direction"><option value="">All directions</option><option>Long</option><option>Short</option></select></label>
+   <label>From<input type="date" id="fFrom" min="2025-01-06" max="2026-01-13" aria-label="From date"></label>
+   <label>To<input type="date" id="fTo" min="2025-01-06" max="2026-01-13" aria-label="To date"></label>
+   <button class="btn-reset" id="fReset" type="button">RESET FILTERS</button>
+  </div>
+
+  <div class="metrics reveal" id="metrics">
+   <div class="metric"><div class="metric-label">Total trades</div><div class="metric-value" id="mTrades">—</div><div class="metric-note">Trades with R logged, in filter</div></div>
+   <div class="metric"><div class="metric-label">Win rate</div><div class="metric-value" id="mWin">—</div><div class="metric-note">Winning trades / total</div></div>
+   <div class="metric"><div class="metric-label">Net result</div><div class="metric-value" id="mNet">—</div><div class="metric-note">Net R multiple · backtest</div></div>
+   <div class="metric"><div class="metric-label">Profit factor</div><div class="metric-value" id="mPF">—</div><div class="metric-note">Gross profit / gross loss</div></div>
+  </div>
+
+  <div class="empty" id="emptyState">No trades match this filter combination. <button class="btn-reset" type="button" onclick="resetFilters()">RESET FILTERS</button></div>
+
+  <div class="dash-grid reveal">
+   <div class="panel">
+    <div class="panel-head"><div><div class="panel-title">Cumulative R progression</div><div class="panel-sub">EQUITY CURVE · FILTERED TRADE SAMPLE</div></div></div>
+    <div class="chart"><canvas id="equityCanvas"></canvas></div>
+    <div class="readout" id="eqTip">Hover the curve for exact values.</div>
+    <div class="chart-legend"><span><i class="legend"></i> Cumulative R</span><span>Backtest · running sum of R in date order</span></div>
+   </div>
+   <div class="side-stack">
+    <div class="panel">
+     <div class="panel-title">Risk profile</div><div class="panel-sub">CURRENT FILTERED SAMPLE</div>
+     <div class="stat-list">
+      <div class="stat-row"><span>Average R / trade</span><span id="sAvg">—</span></div>
+      <div class="stat-row"><span>Max drawdown</span><span id="sDD">—</span></div>
+      <div class="stat-row"><span>Average winner</span><span id="sWin">—</span></div>
+      <div class="stat-row"><span>Average loser</span><span id="sLoss">—</span></div>
+      <div class="stat-row"><span>Winning trades</span><span id="sWinners">—</span></div>
+      <div class="stat-row"><span>Losing trades</span><span id="sLosers">—</span></div>
+     </div>
+    </div>
+    <div class="panel"><div class="panel-title">Performance integrity</div>
+     <p class="note">All results here are backtests from my research logs. Backtested, forward-tested and live results are different things and are never mixed on this page. Coverage gaps in the logs are stated in the definitions below — nothing is silently filled in.</p>
+    </div>
+   </div>
+  </div>
+
+  <div class="dash-grid reveal">
+   <div class="panel">
+    <div class="panel-head"><div><div class="panel-title">Monthly performance</div><div class="panel-sub">NET R BY CALENDAR MONTH</div></div></div>
+    <div class="chart" style="height:190px"><canvas id="monthlyCanvas"></canvas></div>
+   </div>
+   <div class="panel">
+    <div class="panel-head"><div><div class="panel-title">Monthly heatmap</div><div class="panel-sub">NET R · CALENDAR MONTHS · FILTERED SAMPLE</div></div></div>
+    <div class="heatmap" id="heatmap"></div>
+    <p class="note">Colours show monthly performance direction, not risk-adjusted quality.</p>
+   </div>
+  </div>
+
+  <div class="dash-grid reveal">
+   <div class="panel">
+    <div class="panel-head"><div><div class="panel-title">Drawdown</div><div class="panel-sub">DISTANCE BELOW RUNNING PEAK · R</div></div></div>
+    <div class="chart" style="height:190px"><canvas id="ddCanvas"></canvas></div>
+    <div class="chart-legend"><span><i class="legend red"></i> Drawdown</span><span id="ddNote">—</span></div>
+   </div>
+   <div class="panel">
+    <div class="panel-title">Direction &amp; instrument split</div><div class="panel-sub">NET R AND WIN RATE · FILTERED SAMPLE</div>
+    <div class="stat-list" id="splitList"></div>
+    <p class="note">Direction was not logged for 10 DAX trades or for any AU$ M1 EMs trade — those trades count in the totals, not in the direction split.</p>
+   </div>
+  </div>
+
+  <div class="panel reveal" style="margin-top:13px">
+   <div class="panel-head"><div><div class="panel-title">Trade ledger</div><div class="panel-sub">LATEST RECORDS FROM THE SELECTED SAMPLE</div></div><span class="small" id="tradeCount"></span></div>
+   <div class="table-wrap">
+    <table><thead><tr><th>DATE</th><th>INSTRUMENT</th><th class="opt-col">PROGRAMME</th><th class="opt-col">MODEL</th><th>DIRECTION</th><th>RESULT (R)</th></tr></thead><tbody id="tradeTable"></tbody></table>
+   </div>
+  </div>
+
+  <details class="defs reveal">
+   <summary>How every metric is calculated — definitions &amp; data notes</summary>
+   <ul>
+    <li><b>Net R</b> — sum of per-trade R multiples exactly as logged. 1R = the trade's planned risk; EU$ and AU$ programmes risked 1% per trade.</li>
+    <li><b>Win rate</b> — trades with R &gt; 0 ÷ trades with R logged. <b>Average R</b> — net R ÷ trade count. <b>Average win / loss</b> — means of the positive and negative subsets.</li>
+    <li><b>Profit factor</b> — gross winning R ÷ |gross losing R|. <b>Max drawdown</b> — largest peak-to-trough fall of the cumulative R curve, in R.</li>
+    <li><b>Coverage gaps, stated honestly:</b> 4 EU$ log rows had no R and are excluded everywhere. DAX direction is logged on 59 of 69 trades. The AU$ M1 EMs programme never logged direction at all. EU$ stop size exists for 45 of 49 trades; neither AU$ log recorded stop size, so no stop-size statistics are shown for AU$.</li>
+    <li><b>Backtest ≠ live.</b> These are historical backtest results from research logs — not live or funded-account performance, and not a promise of future results.</li>
+   </ul>
+  </details>
+ </div>
+</section>
+
+<section class="section" id="research">
+ <div class="wrap">
+  <div class="heading reveal"><div><div class="eyebrow">02 / Research library</div><h2>Three instruments. Three playbooks.</h2></div><p>The single most important finding in my logs: each instrument runs a different model set. Only LC-1 (M5) and LQ-EM4 appear in more than one book — so the programmes are kept strictly separate, here and everywhere on this page.</p></div>
+
+  <article class="panel prog reveal">
+   <div class="prog-head">
+    <div><div class="card-index">RESEARCH / 001</div><h3><span class="pdot" style="background:#b9add4"></span>EUR/USD — M5 London programme</h3><p class="sub">Aug 2025 – Jan 2026 · London session · M5 entries · multi-timeframe order flow · backtest</p></div>
+    <div class="prog-stats"><div><b>+176.51R</b><span>Net R</span></div><div><b>49</b><span>Trades</span></div><div><b>87.8%</b><span>Win rate</span></div><div><b>+3.60R</b><span>Avg R</span></div></div>
+   </div>
+   <div class="cols">
+    <div>
+     <h4>Hypothesis</h4><p>A liquidity sweep into a session point of interest, followed by a confirmed change of character (CHoCH), offers a repeatable London-session entry with asymmetric payoff — small, capped losses against runners.</p>
+     <h4>Entry conditions</h4><p>Sweep into session POI → confirmed CHoCH → entry on the programme's models: <b>CC5 0.25</b> (25 trades, +83.45R), <b>LC-1 (M5)</b> (13, +49.06R), CC5- F (5, +16.55R), LQ-EM4 (3, +13.70R), M15 S-C (1, +4.10R). Pro MTF order flow on all 49 trades.</p>
+     <h4>Risk management</h4><p>1% risk per trade. Average stop 6.2 pips (45 of 49 trades logged). Worst trade −1.00R; average loss −0.72R against a +4.21R average win.</p>
+    </div>
+    <div>
+     <h4>What the data says</h4>
+     <ul>
+      <li><b>Probability grading works:</b> my own pre-trade HP grade went 17 trades, 17 wins, +76.20R (avg +4.48R). LP averaged +2.38R and held 2 of the 6 losses — the grades order the outcomes exactly.</li>
+      <li><b>Phase A is premium:</b> 7 trades, 100% win rate, avg +6.19R. <b>Phase C is the leak:</b> 37% of volume, 72.2% win rate, 5 of the 6 losses. Phase B never lost (12 trades, +46.20R).</li>
+      <li><b>Midday prints:</b> the 12:00–12:30 window alone made +57.02R — 32% of the programme total — at 92.3%.</li>
+      <li><b>LC-1 quietly beat the flagship:</b> 92.3% win rate vs CC5 0.25's 80.0%; CC5's full losses were unconfirmed entries.</li>
+     </ul>
+     <h4>Weaknesses &amp; limitations</h4><p>One trade (+15.66R, 25 Aug 2025) is 8.9% of the total; the top three are 19.8%. Wide stops (≥10 pips) underperformed (+2.47R avg vs +3.89R). Six months and 49 trades is a promising sample, not proof.</p>
+    </div>
+   </div>
+  </article>
+
+  <article class="panel prog reveal">
+   <div class="prog-head">
+    <div><div class="card-index">RESEARCH / 002</div><h3><span class="pdot" style="background:#a9b8ce"></span>DAX — “DAX 25” programme</h3><p class="sub">Jan – Nov 2025 · London session · M5/M15 entries · every trade graded for decision quality · backtest</p></div>
+    <div class="prog-stats"><div><b>+202.17R</b><span>Net R</span></div><div><b>69</b><span>Trades</span></div><div><b>84.1%</b><span>Win rate</span></div><div><b>+2.93R</b><span>Avg R</span></div></div>
+   </div>
+   <div class="cols">
+    <div>
+     <h4>Hypothesis</h4><p>The same sweep → confirmation framework transfers to the DAX — but execution discipline, not the models, is the variable that decides the result.</p>
+     <h4>Entry conditions</h4><p>A completely different playbook from EU$ — no CC5 anywhere: <b>OFS</b> (31 trades, +76.44R), <b>LC-1 (M5)</b> (18, +52.06R), <b>S-C</b> (13, +42.75R, incl. the log's best trade +12.50R), LC-2A (M5) and LQ-EM4 (7 trades combined, 7 wins).</p>
+     <h4>Risk management</h4><p>Average stop 42.6 points (64 of 69 trades logged). Average win +3.66R vs average loss −0.93R; worst trade −1.00R. Every trade is colour-graded after review: gray = valid, red = invalid, green = over-aggressive, blue = no clear idea.</p>
+    </div>
+    <div>
+     <h4>What the data says</h4>
+     <ul>
+      <li><b>Decision quality is the story:</b> the 60 gray trades alone made <b>+202.22R at 91.7% win rate, with a max loss streak of 1</b>. The 9 non-gray trades net −0.05R combined — removing 9 trades changes the whole log.</li>
+      <li><b>March 2025 was the drawdown</b> (44.4% win rate, the log's only 4-loss streak) — and 3 of those 4 streak losses were non-gray decisions, not model failures.</li>
+      <li><b>Phase A again:</b> 24 trades, +99.30R — 49% of all DAX profit. Trading against order flow failed: Counter MTF OF averaged +0.84R vs Pro's +3.17R.</li>
+      <li><b>The open is dead time:</b> 11:30–12:00 went 5W/5L (5 of the 11 losses); 12:00–13:00 made +121.46R.</li>
+     </ul>
+     <h4>Weaknesses &amp; limitations</h4><p>OFS is the workhorse but carries 7 of the 11 losses at 77.4%. Direction is logged on only 59 of 69 trades; news-day data is almost entirely absent (5 trades) and deliberately unused. Backtest only.</p>
+    </div>
+   </div>
+  </article>
+
+  <article class="panel prog reveal">
+   <div class="prog-head">
+    <div><div class="card-index">RESEARCH / 003</div><h3><span class="pdot" style="background:#9bb9b0"></span>AUD/USD — M5 and M15 programme</h3><p class="sub">Jan – Jun 2025 · London session · M5 entries on 22 of 23 trades · backtest</p></div>
+    <div class="prog-stats"><div><b>+64.55R</b><span>Net R</span></div><div><b>23</b><span>Trades</span></div><div><b>82.6%</b><span>Win rate</span></div><div><b>+2.81R</b><span>Avg R</span></div></div>
+   </div>
+   <div class="cols">
+    <div>
+     <h4>Hypothesis</h4><p>The sweep → confirmation framework on AUD/USD, run as its own book — an LC-1-dominated programme rather than a copy of the EU$ playbook.</p>
+     <h4>Entry conditions</h4><p><b>LC-1 (M5)</b> carries the book (18 of 23 trades, +45.85R), with LC-2A (M5) (3 trades, +9.30R) and M5 CE (1 trade, +5.10R). Best trade +7.76R (4 Jun 2025, LC-1 long).</p>
+     <h4>Risk management</h4><p>1% risk per trade. Every one of the 4 losses was exactly −1.00R — never cut early, never beyond plan. This log's template recorded no stop sizes, so none are claimed.</p>
+    </div>
+    <div>
+     <h4>What the data says</h4>
+     <ul>
+      <li><b>The DAX lessons don't transfer blindly:</b> Phase A was this book's weakest context (66.7% win rate) and Phase C its workhorse (12 trades, +35.39R) — the opposite of EU$ and DAX.</li>
+      <li><b>The colour filter flips:</b> non-gray trades (blue + yellow) netted +9.20R here — grading discipline is not where this log leaks. Its 4 losses were 3 gray + 1 yellow.</li>
+      <li><b>Monday was perfect</b> (6 trades, 6 wins, +18.80R); Wednesday carried 3 of the 4 losses.</li>
+     </ul>
+     <h4>Weaknesses &amp; limitations</h4><p>April–May was the soft patch (May: 66.7% win rate). 23 trades across six months is a modest sample, and with no stop-size data, risk geometry can't be analysed for this programme.</p>
+    </div>
+   </div>
+  </article>
+
+  <article class="panel prog reveal">
+   <div class="prog-head">
+    <div><div class="card-index">RESEARCH / 004</div><h3><span class="pdot" style="background:#9bb9b0"></span>AUD/USD — M1 EMs programme<span class="sample-flag">SMALL SAMPLE · 9 TRADES</span></h3><p class="sub">Jan – Feb 2025 · M1 entries · a five-week experiment, reported separately · backtest</p></div>
+    <div class="prog-stats"><div><b>+41.00R</b><span>Net R</span></div><div><b>9</b><span>Trades</span></div><div><b>77.8%</b><span>Win rate</span></div><div><b>+4.56R</b><span>Avg R</span></div></div>
+   </div>
+   <div class="cols">
+    <div>
+     <h4>Hypothesis</h4><p>A short M1 experiment: can expansion-model entries on the one-minute timeframe produce outsized winners within the same session framework?</p>
+     <h4>Entry conditions</h4><p>Models found in no other log: <b>LQ-EM2</b> (6 trades, +17.90R), <b>LQ-EM4</b> (2 trades, +19.10R, incl. the +13.00R best trade on 8 Jan 2025) and CE .618 (1 trade, +4.00R). Average win +6.14R.</p>
+     <h4>Risk management</h4><p>1% risk per trade; both losses were exactly −1.00R. Longest win streak 4, longest loss streak 1.</p>
+    </div>
+    <div>
+     <h4>What the data says</h4>
+     <ul>
+      <li><b>Phase C carried it:</b> 6 trades, 6 wins, +38.90R — including the counter-order-flow +13R trade, the opposite pattern to DAX/EU$.</li>
+      <li><b>Winners were outsized</b> relative to the other programmes (avg win +6.14R) — the experiment's premise held for five weeks.</li>
+     </ul>
+     <h4>Weaknesses &amp; limitations</h4><p>Nine trades over five weeks: every statistic from this programme is small-sample and is labelled that way wherever it appears. Direction was never logged in this programme, so no direction split exists. It was an experiment, not a validated system.</p>
+    </div>
+   </div>
+  </article>
+
+  <div class="panel reveal" style="margin-top:13px">
+   <div class="panel-title">Cross-programme findings</div><div class="panel-sub">WHAT SURVIVES ACROSS ALL FOUR LOGS</div>
+   <div class="cols">
+    <div><ul>
+     <li><b>Losses are structurally capped; winners run.</b> Worst trade across all 150: −1R. Payoff asymmetry (avg win ÷ |avg loss|) is ≈5.8× on EU$ and ≈3.9× on DAX.</li>
+     <li><b>Pre-trade grading predicts outcomes</b> on EU$ (HP +4.48R avg → MP +3.43R → LP +2.38R) and DAX (HP +3.42R → LP +1.47R) — the journal's own labels carry signal.</li>
+    </ul></div>
+    <div><ul>
+     <li><b>Time of day is an edge variable,</b> not a detail: midday London windows dominate every log, and the weak windows differ per instrument.</li>
+     <li><b>Context does not transfer blindly.</b> Phase A is premium on EU$/DAX and the weakest context on AU$ M5/M15 — each book has to be read on its own data.</li>
+    </ul></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="trades">
+ <div class="wrap">
+  <div class="heading reveal"><div><div class="eyebrow">03 / Trade explorer</div><h2>Every trade, on the record.</h2></div><p>Search the full 150-trade dataset. Entry, stop and target prices were not part of the log schema, so they are never shown or invented — what you see is exactly what was recorded.</p></div>
+
+  <div class="filters" role="group" aria-label="Trade explorer search">
+   <label class="grow">Search<input type="text" id="q" placeholder="Model, phase, date… e.g. CC5, Phase A, 2025-08" aria-label="Search trades"></label>
+   <label>Sort<select id="qSort" aria-label="Sort trades"><option value="desc">Largest R first</option><option value="asc">Smallest R first</option><option value="date">Date order</option></select></label>
+  </div>
+
+  <div class="panel reveal" style="padding:6px 10px">
+   <div class="explorer-scroll">
+    <table aria-label="All backtest trades"><thead><tr><th>DATE</th><th>INSTRUMENT</th><th>MODEL</th><th>DIR</th><th class="opt-col">GRADE</th><th class="opt-col">PHASE</th><th class="opt-col">WINDOW</th><th class="opt-col">SL</th><th>RESULT (R)</th></tr></thead><tbody id="tbody"></tbody></table>
+   </div>
+  </div>
+  <p class="small" id="tcount" style="margin-top:10px"></p>
+
+  <div class="research-grid" style="margin-top:22px">
+   <article class="research-card reveal"><div class="card-index">CASE STUDY · EU$</div><div class="tag">BEST TRADE · PROGRAMME 001</div><h3>+15.66R — 25 Aug 2025</h3><p>CC5 0.25, short, MP grade, Phase C, 12:00–12:30 window, 6.4-pip stop. The single largest result in any log — and, honestly noted, 8.9% of the EU$ total on its own.</p><div class="card-bottom"><span>EUR/USD · LONDON</span><span>+15.66R</span></div></article>
+   <article class="research-card reveal"><div class="card-index">CASE STUDY · DAX</div><div class="tag">BEST TRADE · PROGRAMME 002</div><h3>+12.50R — 7 Jul 2025</h3><p>S-C, long, MP grade, Phase A, 12:00–12:30 window, graded gray — a valid trade by the book. It landed inside DAX's premium Phase A context, in the midday window that produces most of the log's profit.</p><div class="card-bottom"><span>DAX · LONDON</span><span>+12.50R</span></div></article>
+   <article class="research-card reveal"><div class="card-index">CASE STUDY · AU$</div><div class="tag">BEST TRADE · PROGRAMME 004</div><h3>+13.00R — 8 Jan 2025</h3><p>LQ-EM4 in the M1 EMs programme, MP grade, Phase C — a counter-order-flow trade inside a 9-trade experiment. Recorded as-is; small sample, not a headline claim.</p><div class="card-bottom"><span>AUD/USD · M1 EMS</span><span>+13.00R</span></div></article>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="methodology">
+ <div class="wrap method-grid">
+  <div class="method-intro reveal"><div class="eyebrow">04 / Research methodology</div><h2>Process before performance.</h2><p>A disciplined research process separates a repeatable trading hypothesis from an attractive result that may simply be noise. A promising backtest is a hypothesis that survived one dataset; a validated system also needs out-of-sample behaviour and live execution evidence. By that standard, everything here is honestly presented as research-stage.</p><p style="margin-top:13px">Risk is managed structurally: fixed fractional risk (1% on the EU$ and AU$ programmes), stops placed at invalidation, and decision-quality grading that measures trades taken outside a stable process separately instead of quietly averaging them in.</p></div>
+  <div class="steps reveal">
+   <div class="step"><div class="step-num">01</div><div><h3>Observe</h3><p>Watch how price behaves around session liquidity and points of interest; identify recurring behaviour and structural patterns.</p></div></div>
+   <div class="step"><div class="step-num">02</div><div><h3>Form a hypothesis</h3><p>Translate observations into explicit, falsifiable trading rules — including what result would kill the idea.</p></div></div>
+   <div class="step"><div class="step-num">03</div><div><h3>Collect and validate data</h3><p>Log every candidate trade with model, grade, phase, window, stop size and R. Check time alignment, missing values and biases.</p></div></div>
+   <div class="step"><div class="step-num">04</div><div><h3>Backtest</h3><p>Apply the rules consistently over history — London session only, fixed risk — and document every assumption.</p></div></div>
+   <div class="step"><div class="step-num">05</div><div><h3>Evaluate statistically</h3><p>Split results by model, phase, grade, weekday and window. Measure expectancy, drawdown, streaks and robustness — and hunt the leaks.</p></div></div>
+   <div class="step"><div class="step-num">06</div><div><h3>Refine</h3><p>Cut what the data condemns: unconfirmed entries, weak phases, dead time windows. Keep what survives contact with the splits.</p></div></div>
+   <div class="step"><div class="step-num">07</div><div><h3>Document</h3><p>Record limitations, improvements and what the evidence does not establish — so the next test starts from evidence, not memory.</p></div></div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="projects">
+ <div class="wrap">
+  <div class="heading reveal"><div><div class="eyebrow">05 / Technical work</div><h2>Building beyond the chart.</h2></div><p>Real work only — no invented stack. Python is at basics level and in active learning, and it is presented that way deliberately.</p></div>
+  <div class="project-grid">
+   <article class="project reveal"><div class="project-icon">⌘</div><h3>Backtest research system</h3><p>Four structured trade logs (EU$, DAX, two AU$ programmes) capturing model, direction, probability grade, MTF phase, entry window, stop size and R per trade — the dataset this entire page is computed from.</p><div class="tech"><span>NOTION DATABASES</span><span>DATA MODELLING</span><span>150 TRADES</span></div></article>
+   <article class="project reveal"><div class="project-icon">⌁</div><h3>Statistical trade analysis</h3><p>Full decomposition of the logs: performance by model, phase, grade, weekday, window, POI type and order-flow alignment; streak analysis; and the decision-quality (colour-grade) filtering that isolated the DAX drawdown's real cause.</p><div class="tech"><span>STATISTICAL ANALYSIS</span><span>DATA VISUALISATION</span></div></article>
+   <article class="project reveal"><div class="project-icon">◫</div><h3>This portfolio — interactive dashboard</h3><p>A single-file, dependency-free web app: the trade dataset is embedded once and every metric, equity curve, drawdown, heatmap and filter recomputes client-side from it. Deployed on GitHub Pages.</p><div class="tech"><span>HTML / CSS / JS</span><span>CANVAS CHARTS</span><span>GITHUB PAGES</span></div></article>
+   <article class="project reveal"><div class="project-icon">⟲</div><h3>Python — in progress</h3><p>Learning Python fundamentals with a quantitative goal: first exercises compute win rate and average R from monthly result lists (backtest_stats.py). The roadmap is deliberate — data analysis first, then backtesting tooling of my own. Basics level; not claimed as expertise.</p><div class="tech"><span>PYTHON · BASICS</span><span>LEARNING IN PUBLIC</span><span>QUANT ROADMAP</span></div></article>
+   <article class="project reveal"><div class="project-icon">✦</div><h3>Trader support &amp; moderation</h3><p>Moderator and trader-support work in a private trading community since Jan 2025 (210+ members), and previously in a 4,000+ member community — answering trader questions, reviewing setups and keeping research standards in the room.</p><div class="tech"><span>TRADER SUPPORT</span><span>COMMUNITY OPS</span><span>JAN 2025 – PRESENT</span></div></article>
+   <article class="project reveal"><div class="project-icon">◷</div><h3>Annual trading calendar research</h3><p>Seasonality research formalised into rules: no EU$/AU$ trading in June (bank-holiday volatility collapse), July treated as a range-trap month, and a defined trading year — derived from the logs' own seasonal behaviour.</p><div class="tech"><span>SEASONALITY</span><span>RISK RULES</span></div></article>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="about">
+ <div class="wrap about-grid">
+  <div class="about-art reveal"><span>R.</span></div>
+  <div class="about-copy reveal"><div class="eyebrow">06 / About</div><h2>Research first. Opinions last.</h2><p>I'm Rajwardhan Kumar, an independent trader based in Barh, Bihar, India, trading since August 2024. I work one session — London — across EUR/USD, AUD/USD and the DAX, because depth on a narrow problem beats breadth I can't verify.</p><p>My work is a loop: observe market behaviour, write the hypothesis down, test it against logged data, and let the splits — by model, phase, grade and time window — decide what survives. The results above include the uncomfortable findings (a flagship model beaten by a quieter one, a drawdown caused by decision quality rather than the system), because those are the findings that improve the next test.</p><p>Alongside trading, I support other traders as a community moderator, and I'm building toward quantitative development — learning Python properly, with the aim of writing my own backtesting and analysis tooling.</p><p><b>Open to:</b> trading-support, operations and research roles and internships — remote, full-time, part-time or contract.</p></div>
+ </div>
+</section>
+
+<section class="section" id="contact">
+ <div class="wrap">
+  <div class="contact-box reveal">
+   <div><div class="eyebrow">07 / Contact</div><h2>Let's talk about the work.</h2><p>The fastest way to assess this work is to filter the dashboard above — then talk to me about what it shows. Interested in trading research, quantitative projects, technology or collaboration? I'd be glad to connect.</p></div>
+   <div>
+    <div class="actions">
+     <a class="btn primary" id="emailLink" href="mailto:Rajwardhankr@outlook.com">Email me ↗</a>
+     <a class="btn secondary" href="data:application/octet-stream;base64,JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNiAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YxIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKMyAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMiAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vd3d3LmxpbmtlZGluLmNvbS9pbi9yYWp3YXJkaGFua3IpCj4+IC9Cb3JkZXIgWyAwIDAgMCBdIC9SZWN0IFsgMjYyLjYzMTUgNzUzLjIyMzMgMzcxLjU5MzUgNzYzLjU0MzMgXSAvU3VidHlwZSAvTGluayAvVHlwZSAvQW5ub3QKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vdHJhZGluZ3BvcnRmb2xpby5ub3Rpb24uc2l0ZS9UcmFkaW5nLVBvcnRmb2xpby00MGNlNDFkNTQ3YWY4MTcxYWUwNmY2ZWE1OTU2MGM1OSkKPj4gL0JvcmRlciBbIDAgMCAwIF0gL1JlY3QgWyA0MTQuOTM3NSA3NTMuMjIzMyA1MTYuMjYyNyA3NjMuNTQzMyBdIC9TdWJ0eXBlIC9MaW5rIC9UeXBlIC9Bbm5vdAo+PgplbmRvYmoKNiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1PYmxpcXVlIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMyAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0Fubm90cyBbIDQgMCBSIDUgMCBSIF0gL0NvbnRlbnRzIDExIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAKICAvVHJhbnMgPDwKCj4+IC9UeXBlIC9QYWdlCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTAgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9BdXRob3IgKFJhandhcmRoYW4gS3VtYXIpIC9DcmVhdGlvbkRhdGUgKEQ6MjAyNjExMDMwODQyNDYrMDUnMDAnKSAvQ3JlYXRvciAoXCh1bnNwZWNpZmllZFwpKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAyNjExMDMwODQyNDYrMDUnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAoXCh1bnNwZWNpZmllZFwpKSAvVGl0bGUgKFJhandhcmRoYW4gS3VtYXIgXDIwNCBDVikgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxMCAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDcgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAzNDYyCj4+CnN0cmVhbQpHYiE7ZmdOKSNqJnEvKS1vWz5GNUplZCtPamxtPi8nLCcnaSMudVRoR288QFhBbThzJCxLWXRIbydwQTtrXnA8KSYzRWxVRnJATSRjI2cvV2whRTBqTE1abExrJm1zUEg5XDo5Qis/cFNOTWtrNFE7P09ebEFvPE5xb1sjTnFAMExZRFYuLlxnK0JBYUhRTVVtZjlUby5TWWVjVHBVOUkzPloubjBSKyFMTm5TI1NOJmhaMHJdbkMxZSJlOCcyRWglbD5uJkdJWkw+PlhURykqYmxoK1JUbElGMChMVlhabC1yWFlSJE8rVVFMaiotaScvVXBKT2hmMmdvWjk1PlAyQiQqYClnOC1tLSgvTys5JWUlWikkIm5OM2tLKk8vXEAqXlhCPDdRTlJIb2RXZUErOFdFXyImODBlXzJDTzIodUIoVFpWJ2hhND1pZnQtbGRsakVuZSNPdFcyWSM3amMxYycscihJS1JnL2NaTmlGak5CXTU5RGZhM1UjcWNkXVUmbiY6ZnIzWHFmSzBGMGZZTkN0X1BhJDFiWl9sWko/OSwsXlk0TGBqWUFpIiNIPDVkT3AodEI+dGtGU1lcY0QiUDk/Xlc3N1BkZjQzL2cwSkxOXkZpPXBBTDxHNl1DSkUsaTxCUFdlRFkuamZqVFVzL2grNjxwLmNySTcrWGpJZypfYkFMUVdPKyJoW2JbRGhDMmxhQkRVLXVVYU4/SDsuPktgK1ombj1CWTRYMGx1NDJWaGxlVmdXR0lyOXUwazFHI0o1SFdKMiw9I1BhaGc6UClSV0Q3cyQ1J0woVGFaLHVwYyFKIiNJUT9fVDdZPEBcaC9hSz8/WFJzVD5sXy9QSllxJi0za0tnQWVVYkc6YWA0RTFZcl1uLCopSFROXWtkTisyRUAxaSlnPEctXWhiSUsoJ1B0WEoxaW9oVTRmQ0FuU2FZJkhpQD1zRitWRjhuSG5SKl5MOzBrKl9lVzVmdURXdWNBJz5dYlM4c3BxZTAiWT1BLzQtJ2I9SGEiOFh0PFomJnFfNjMnLzc6VypwRyFcMHVaZ2U4TDFKcihubFQsb2kqPyY7MCRNN0RUUWRYdCY2NkhObUFhXl41dSFqXClsR0xLXDUtTzlqWE8iQ2wiRStfVmduOjs6NzNFKSwlNys6SD45YGdjQExkX3VuNjNzNiVHbGhbZyVTSiplaTtqM1lkWzVRPz1cNSs8KG5mSHAqa288L3AkMSY/bVVbSW9CZGxjW3FjPnNGMmNwTzxjOixoK2VCRSMuJ2JCbFM4YCVCamguN2I7UFlyI2w+Yl9NKnFrW0gmLSomX19AYVJsMVNMVi91LSI0dW5QMkRwKl9MXU9YJyE/KE0sMEAlQ3Bvclw3KWprZUFEU1I2aDdMNig4YkQ6az5MckhXVE5Cb00jQ3ROWTUtZVhsRFAuP2I/Q2VmUDMyRyMoZ2ArWmM7P0dJVVcmcF0pPE1YYmE4WnNbLFNgZmI1KGQ4ZCwpM1JMUzBNb2hncElvMT5vInJJYUoyQSdfZi5bQmYzZCxUPSQ5WEZET2RFZzVoVzRNVmQ9O0xsSW8vakkkODxaKCtrS3NdXy1nWy1kbjszPEpDX2kmOyxwOnVuMEc+UiJac10vITwjVE0kJWh1VmRqRidGaT1HUzZbISkqJDksYldcVG4yVFFBOSEpZlMhXixmUEdkcSF0S2lRb3FATSpTRkpGTVBULmZqTj5dSnVNRSpaXFFWU0RTKUIpO3BEY29sKE5GUj80NUw6MWJ1XFs5TTNiN0BkMXA5ZSc0OjZYUidSYyspV2tvYzZHcT9HXzs1PGVNQTs2Yl9aImcyKWsoWFc0KkJEUG5mSzZnVl0qbS9NYDdeX1NWMCklMDQxPUo0SmdhZUZPbT91Qyk/Y14lKXRJcE1gJktEc3RIcysjN0gwXUc5TmlvSlstQUNjR2wxaGlCK0lkc0A7MGdxRWZJXFI/VUJgLmQjJCVzZDcpSk8/V0c4ZyUrOV9cWUpcIiY/TkxYWCRZMyJKLVBdcVUoYzpbZ3VQSjsraUQjbHRZL1VaO0QoUlBzclolTTdGdDZyUSFDRCJRP2lxPEc9akFrYWhkSXBALGE6M0R0IlZHRldIMi9VWiFEL0tmI0BSVj1ITkg4YCUtcDJoazBdZVBNSz42YDo2L0dkImlGN0AuZC4sbCY4YW0qU0I/OSwwZUczIkZHWGlWbUUmIS1HPzZuNUQlWWMqOk1ZXEZxLDghUVtCViozJSkzN0llMDRSRV9PSDBMZ0NbUGVXMCpqQ1JNJUVYXmldQl0hOTgjSDVNb0ItQyFnMDxnVE9BTWwmVj0+YkxzMjtFKDRNTTBgXiE0cT5cRFQlanUkbDM4QmFubm11MWdxUkF0XW5CW3E4IVRKay9FO0c4c0FlNzpsSltyVCRMTHRqLjRkaiwoUmAlK2JxPjByZFYmbnB0ZUctVG9CMlxOSXVfYSxvQmRbczFUPFMxdChjPEEiMiwxX1lvUCwzIUhDOytZanI1Y2NlTSVDak5LKG90K0VMTVVkaCZrNVE4LDhcNERYQHI0Olg+WTc4ZXVcbkc2NiRsYFVtJC5FZDVuJT5FK05dOlg1QGs1LG1WZSZSWGknUktuWXJvSV1yb3FwTUdINzI3YXFTY3RMWWxjKm9TOD0rKmxkO19BI0UlVipWK0w9YD47UDlkdXI3LEMyI0RBXFBQZidBaFY0aW91LSwsZ1xScDcvNGoxdDsoWDhUb2svRG8haE5qJVRhOG05PDFIL1dtR2IrVjROOUMvNW5JdEQ2QidWcy5vLXVMST9iQWxII208dXFIIl9IMkVjb0tUZT5hXEZbTVZTZ1YnY0I/VEJaYTA6MDlCQm01WGxbKkM9R2FnIlVFLzVZJWFHX0wjMGk4XjNTJmEqQFZcLSNOZk5dZUY8Zz9HNFdcWkBAXWFcV2hpMFgpMmtWRTNRbkppVTRdXytkVWJPOUxXQDdIPSFbNV8/aEUoPlQvXV4kZ00rP3FaYmMtXzxqYV0yWGM4K2w/QFBNQDYqTD1db29EaTMrZCdNMjMuOlgqXk01ISRrTnNlSkQ2JllQSUBSLiZoTVZvVEEoLGhzMWhaPi9YaFJKVFkxZjhERnRqQGAvaiJNRVxFKVAtQHVbKUtyI2BsLVpXMik9Mk5tZT9aKUhOYE9gclctUkYiPiUiL1ReUUw1My9iMUUqO3VQUGNAdDQiL1pYOVFnVGxTNDpqbGBYKm5dXEYqVEgyVzo3NVElQHJYT1NKLlBoSG4nOmtkanVbb2FMZj5cR0ctaGY+JFYyamA0JFVGcG91Zko+dXN1TFMrSFIpWVFdIm1kVGwvIT9zUHRFdFwlMGphY0pUPD1VcElsdFgpJWM3XkMqY1BQRkI0LSsmVSM7azJ1MUpeISVVJFo/WFVOWD4vPjRMNSpNZUIvOiFjVVomJ3I8M2k6bkVAT0AvNiYsPVxERU9aT29SRUdJPkFIJjtfdFtCLiVwQVZfQDhlT3NQdElBXUxMIkQjOCJSYjRFMSg3RFlANzBfIkFcPls4XXFWPkZPbFwmbixobCsuSUFwYC1OJG1eJVQ2MyMnSUVkUGpmTElILz5fJW9VXD46ODloKXMkK1ZWUnNRKWowPysuSDEjSSwiIjxARlFyOCw1MV8lVy4vO107LnBsL25lSE5UcC1QSVU9J0wpYjQ3KzBPVWsjcSlJal4wPkReU1oiZmNpOGJ0aGlXaWV1bmUobkYkOl9QWCk2KVhhQmlqMmdVInJPNiciLXVCNC8tPVZDIzAzRyJxJV9ETmBxaUtHJS9WbVg0PyxQSSpLXjVdUF1tPnQ/MEBnSUA/NEVVOj5ZLWRqaCI1Jz5gSU5kRkswQk5xMFU4SF4uZFgoNExLRGQsIVkzRU9UMjlfaWJWU2NHYi5yL2ZmQlQlMzk/QzZVV11dPjkmPjVLNXBJOShSQC4sU29aTl1sYTcpKmZmKFBVYXJcVCFgKDRvayhIJGciLjFcMzA/N0lfKTNGcDpKMWYnO01MZU1YPWFdJmlXLEMuSV1wKjRdMVM9I3IyOjxvV24nUTBHR25qYCUoSUxMSjJVSE5payQyblRzdD81XzAxKnJvSTBKNik0UUxlL0olVVFrWElXTSdmWm9zS1RYVl8jKyZCZmc1cS9xOVdwVjZOaE1XbmZuTktDZU8uXz4uSmReYHVZY0pqY05CbmZjdT1oSHA8Nlo7LGA+YlREODg/JnFlPTF1PE5PZkBRSGVoa0FWMGZITmI4Zk1DSC5TN1IsbDk7SXJpVjdKNyJwRGUmYGowZ1VLV09kZEc5dUhIZ1whSDtlNXE5dUBsPSo0QTJxT1onUk9aVE1WQFVSRjpJYlw+TGFBU1IpQk1cI1IlU1lPZylVXjw+VFUsTl1yMTt1MzxxX1cpO3AyY0RzPSRhYyNwdGMhJVFALl1hcDpLRzBxQzE7J0tQJTw/WihpZSshRGVsYF8lWkciKzBWQjV1ajlEX08oRm8pM2doUT43UT9FMVJCRm9ERzgoSGgvSjRMRWA+QUpTLFomYic2aE9IaEtwbzg3K0I0U1xWUk0zMipFRFAwZTsvRHF1cF0pTFVIS0gwOkQsKWU2MltWY1dtI1VIY2Vgfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCAxMgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDExMiAwMDAwMCBuIAowMDAwMDAwMjE5IDAwMDAwIG4gCjAwMDAwMDAzMzEgMDAwMDAgbiAKMDAwMDAwMDUyMyAwMDAwMCBuIAowMDAwMDAwNzYyIDAwMDAwIG4gCjAwMDAwMDA4NzcgMDAwMDAgbiAKMDAwMDAwMTEwNiAwMDAwMCBuIAowMDAwMDAxMTc1IDAwMDAwIG4gCjAwMDAwMDE0NjkgMDAwMDAgbiAKMDAwMDAwMTUyOSAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw5YWMzOWQ1ZDcxZDRmZDIxOGFmZmRiNDdjYTBmMTVlNz48OWFjMzlkNWQ3MWQ0ZmQyMThhZmZkYjQ3Y2EwZjE1ZTc+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDkgMCBSCi9Sb290IDggMCBSCi9TaXplIDEyCj4+CnN0YXJ0eHJlZgo1MDgzCiUlRU9GCg==" download>Download CV</a>
+     <a class="btn secondary" id="linkedinLink" href="https://www.linkedin.com/in/rajwardhankr/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+     <a class="btn secondary" id="githubLink" href="https://github.com/justtriio" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+     <button class="btn secondary" id="copyMail" type="button">Copy email</button>
+    </div>
+    <div class="copy-msg" id="copyMsg" role="status"></div>
+   </div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+<p class="footer-note"><b>Data &amp; methodology note.</b> All performance figures are backtest results computed from the 150 per-trade records in the research logs (EU$ Aug 2025 – Jan 2026 · DAX Jan – Nov 2025 · AU$ Jan – Jun 2025), embedded in this page and recalculated in your browser. Backtested results are not live trading performance and are not a promise of future results.</p>
+<div class="footer-inner"><span>© <span id="year"></span> RIIO. BUILT AROUND RESEARCH.</span><div class="footer-links"><a href="#home">Back to top ↑</a><a href="#research">Research</a><a href="#contact">Contact</a></div></div>
+</div></footer>
+
+<script>
+/* ============================================================
+   DATA — the real backtest logs (verified dataset).
+   150 trades with R: EU$ 49 (+176.51R) · DAX 69 (+202.17R) ·
+   AU$ M5/M15 23 (+64.55R) · AU$ M1 EMs 9 (+41.00R).
+   Fields: date, instrument, programme, model, direction,
+   prob (pre-trade grade), phase, window (entry window as
+   logged), r (result in R), sl (stop size where logged —
+   EU$ only), colour (DAX/AU$ decision-quality grade).
+   "—" = not logged in the source. All results are BACKTEST.
+   ============================================================ */
+const TRADES = [{"date":"2025-08-12","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"1:00 - 1:30","r":1.5,"sl":"7.8","colour":""},{"date":"2025-08-13","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":4.1,"sl":"4","colour":""},{"date":"2025-08-14","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5- F","direction":"Short","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":2.1,"sl":"8.5","colour":""},{"date":"2025-08-15","instrument":"EU$","programme":"EU$ M5 · London","model":"—","direction":"Long","prob":"MP","phase":"Phase B","window":"12:00 - 12:30","r":5.1,"sl":"—","colour":""},{"date":"2025-08-20","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase B","window":"11:30 - 12:00","r":2.5,"sl":"—","colour":""},{"date":"2025-08-22","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"LP","phase":"Phase D","window":"1:00 - 1:30","r":2.1,"sl":"6.3","colour":""},{"date":"2025-08-25","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":15.66,"sl":"6.4","colour":""},{"date":"2025-08-27","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"HP","phase":"Phase C","window":"12:30 - 1:00","r":5.1,"sl":"7","colour":""},{"date":"2025-08-29","instrument":"EU$","programme":"EU$ M5 · London","model":"LQ-EM4","direction":"Long","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":3.1,"sl":"4.5","colour":""},{"date":"2025-09-01","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase C","window":"1:00 - 1:30","r":-1.0,"sl":"—","colour":""},{"date":"2025-09-05","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A","window":"11:30 - 12:00","r":3.1,"sl":"6.6","colour":""},{"date":"2025-09-08","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5- F","direction":"Long","prob":"MP","phase":"Phase A","window":"12:30 - 1:00","r":3.75,"sl":"10.1","colour":""},{"date":"2025-09-10","instrument":"EU$","programme":"EU$ M5 · London","model":"LQ-EM4","direction":"Short","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":4.1,"sl":"6.2","colour":""},{"date":"2025-09-12","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A2","window":"11:30 - 12:00","r":3.5,"sl":"5.6","colour":""},{"date":"2025-09-16","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase A2","window":"11:30 - 12:00","r":5.2,"sl":"5.4","colour":""},{"date":"2025-09-19","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5- F","direction":"Short","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":2.1,"sl":"11.2","colour":""},{"date":"2025-09-23","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"LP","phase":"Phase D","window":"12:00 - 12:30","r":2.55,"sl":"7.4","colour":""},{"date":"2025-09-25","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":-0.5,"sl":"8.7","colour":""},{"date":"2025-09-26","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"LP","phase":"Phase A2","window":"12:00 - 12:30","r":-0.6,"sl":"6.1","colour":""},{"date":"2025-09-30","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"HP","phase":"Phase C","window":"1:00 - 1:30","r":3.1,"sl":"5.3","colour":""},{"date":"2025-10-06","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":3.5,"sl":"7.2","colour":""},{"date":"2025-10-07","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":7.1,"sl":"5.5","colour":""},{"date":"2025-10-13","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"HP","phase":"Phase B","window":"1:00 - 1:30","r":6.85,"sl":"9.2","colour":""},{"date":"2025-10-20","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":-1.0,"sl":"—","colour":""},{"date":"2025-10-21","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":3.25,"sl":"4.2","colour":""},{"date":"2025-10-21","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"MP","phase":"Phase A2","window":"2:00 - 2:30","r":3.25,"sl":"6.4","colour":""},{"date":"2025-10-22","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":3.11,"sl":"5.5","colour":""},{"date":"2025-10-22","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"LP","phase":"Phase A2","window":"2:00 - 2:30","r":3.1,"sl":"5.5","colour":""},{"date":"2025-10-24","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"HP","phase":"Phase C","window":"12:30 - 1:00","r":3.6,"sl":"4.8","colour":""},{"date":"2025-10-28","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":-1.0,"sl":"7","colour":""},{"date":"2025-11-03","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"HP","phase":"Phase A","window":"1:00 - 1:30","r":7.5,"sl":"2.4","colour":""},{"date":"2025-11-07","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase A2","window":"1:30 - 2:00","r":3.25,"sl":"5.5","colour":""},{"date":"2025-11-10","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":6.5,"sl":"3.3","colour":""},{"date":"2025-11-11","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase B","window":"12:30 - 1:00","r":7.25,"sl":"5.1","colour":""},{"date":"2025-11-11","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A","window":"2:30 - 2:45 - N","r":11.85,"sl":"3","colour":""},{"date":"2025-11-19","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"HP","phase":"Phase B","window":"1:00 - 1:30","r":1.55,"sl":"10","colour":""},{"date":"2025-11-28","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"LP","phase":"Phase C","window":"2:00 - 2:30","r":2.1,"sl":"6.8","colour":""},{"date":"2025-12-01","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"MP","phase":"Phase A2","window":"2:00 - 2:30","r":3.1,"sl":"6.1","colour":""},{"date":"2025-12-05","instrument":"EU$","programme":"EU$ M5 · London","model":"M15 S-C","direction":"Short","prob":"LP","phase":"Phase C","window":"1:00 - 1:30","r":4.1,"sl":"6.7","colour":""},{"date":"2025-12-08","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"LP","phase":"Phase C","window":"2:00 - 2:30","r":5.19,"sl":"6","colour":""},{"date":"2025-12-09","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"LP","phase":"Phase C","window":"1:00 - 1:30","r":-0.25,"sl":"4.6","colour":""},{"date":"2025-12-15","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5- F","direction":"Long","prob":"HP","phase":"Phase B","window":"2:00 - 2:30","r":5.5,"sl":"5.2","colour":""},{"date":"2026-01-05","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Short","prob":"HP","phase":"Phase B","window":"2:00 - 2:30","r":2.1,"sl":"9.5","colour":""},{"date":"2026-01-06","instrument":"EU$","programme":"EU$ M5 · London","model":"LQ-EM4","direction":"Short","prob":"HP","phase":"Phase B","window":"1:30 - 2:00","r":6.5,"sl":"7","colour":""},{"date":"2026-01-08","instrument":"EU$","programme":"EU$ M5 · London","model":"—","direction":"Short","prob":"HP","phase":"Phase B","window":"12:00 - 12:30","r":4.55,"sl":"2","colour":""},{"date":"2026-01-09","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Short","prob":"HP","phase":"Phase B","window":"—","r":1.1,"sl":"6.7","colour":""},{"date":"2026-01-12","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5- F","direction":"Long","prob":"LP","phase":"Phase C","window":"12:00 - 12:30","r":3.1,"sl":"5.7","colour":""},{"date":"2026-01-12","instrument":"EU$","programme":"EU$ M5 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase B","window":"1:30 - 2:00","r":3.1,"sl":"4.2","colour":""},{"date":"2026-01-13","instrument":"EU$","programme":"EU$ M5 · London","model":"CC5 0.25","direction":"Long","prob":"HP","phase":"Phase B","window":"2:00 - 2:30","r":0.1,"sl":"6.7","colour":""},{"date":"2025-01-07","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"—","prob":"MP","phase":"Phase A","window":"12:30 - 1:00","r":2.75,"sl":"—","colour":"gray"},{"date":"2025-01-14","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"—","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":-1.0,"sl":"—","colour":"red"},{"date":"2025-01-15","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"—","prob":"HP","phase":"Phase A","window":"11:30 - 12:00","r":6.8,"sl":"—","colour":"gray"},{"date":"2025-01-15","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"—","prob":"HP","phase":"Phase A","window":"1:30 - 2:00","r":3.7,"sl":"—","colour":"gray"},{"date":"2025-01-16","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A2","window":"11:30 - 12:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-17","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-20","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":3.82,"sl":"—","colour":"gray"},{"date":"2025-01-21","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A","window":"1:30 - 2:00","r":3.22,"sl":"—","colour":"gray"},{"date":"2025-01-22","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"1:00 - 1:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-23","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-23","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":3.4,"sl":"—","colour":"gray"},{"date":"2025-01-28","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"—","prob":"LP","phase":"Phase B","window":"1:30 - 2:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-29","instrument":"DAX","programme":"DAX 25 · London","model":"LC-2A (M5)","direction":"—","prob":"MP","phase":"Phase A2","window":"2:30 - 2:45 - N","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-01-31","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"—","prob":"MP","phase":"Phase B","window":"2:00 - 2:30","r":0.1,"sl":"—","colour":"gray"},{"date":"2025-02-03","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"LP","phase":"Phase B","window":"12:00 - 12:30","r":2.1,"sl":"—","colour":"gray"},{"date":"2025-02-04","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase B","window":"2:00 - 2:30","r":8.1,"sl":"—","colour":"gray"},{"date":"2025-02-06","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":6.8,"sl":"—","colour":"gray"},{"date":"2025-02-10","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":7.1,"sl":"—","colour":"gray"},{"date":"2025-02-13","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase A2","window":"2:30 - 2:45 - N","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-02-17","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-02-20","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase C","window":"12:00 - 12:30","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-02-26","instrument":"DAX","programme":"DAX 25 · London","model":"LQ-EM4","direction":"Long","prob":"LP","phase":"Phase A","window":"12:00 - 12:30","r":5.1,"sl":"—","colour":"gray"},{"date":"2025-02-28","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"—","prob":"MP","phase":"Phase B","window":"12:30 - 1:00","r":8.2,"sl":"—","colour":"gray"},{"date":"2025-03-05","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":6.5,"sl":"—","colour":"gray"},{"date":"2025-03-06","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"LP","phase":"Phase A2","window":"1:30 - 2:00","r":1.6,"sl":"—","colour":"gray"},{"date":"2025-03-10","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"LP","phase":"Phase C","window":"11:30 - 12:00","r":-1.0,"sl":"—","colour":"red"},{"date":"2025-03-11","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase C","window":"11:30 - 12:00","r":-1.0,"sl":"—","colour":"blue"},{"date":"2025-03-17","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"LP","phase":"Phase B","window":"12:00 - 12:30","r":-1.0,"sl":"—","colour":"green"},{"date":"2025-03-17","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase B","window":"1:00 - 1:30","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-03-18","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":2.55,"sl":"—","colour":"gray"},{"date":"2025-03-19","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"LP","phase":"Phase B","window":"1:00 - 1:30","r":1.2,"sl":"—","colour":"gray"},{"date":"2025-03-28","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase B","window":"11:30 - 12:00","r":-1.0,"sl":"—","colour":"green"},{"date":"2025-04-01","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"MP","phase":"Phase C","window":"1:00 - 1:30","r":1.55,"sl":"—","colour":"gray"},{"date":"2025-04-04","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase A2","window":"12:30 - 1:00","r":5.0,"sl":"—","colour":"gray"},{"date":"2025-04-28","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":1.8,"sl":"—","colour":"gray"},{"date":"2025-04-30","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":2.6,"sl":"—","colour":"gray"},{"date":"2025-05-01","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A2","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-05-06","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase A2","window":"11:30 - 12:00","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-05-08","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"1:00 - 1:30","r":2.5,"sl":"—","colour":"pink"},{"date":"2025-05-09","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":1.6,"sl":"—","colour":"gray"},{"date":"2025-05-13","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Short","prob":"LP","phase":"Phase C","window":"12:00 - 12:30","r":1.5,"sl":"—","colour":"gray"},{"date":"2025-05-14","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Short","prob":"HP","phase":"Phase C","window":"12:00 - 12:30","r":3.39,"sl":"—","colour":"gray"},{"date":"2025-05-19","instrument":"DAX","programme":"DAX 25 · London","model":"LC-2A (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"2:00 - 2:30","r":6.1,"sl":"—","colour":"gray"},{"date":"2025-05-21","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"LP","phase":"Phase A","window":"12:00 - 12:30","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-05-22","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":4.39,"sl":"—","colour":"gray"},{"date":"2025-05-23","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Short","prob":"MP","phase":"Phase B","window":"2:00 - 2:30","r":4.8,"sl":"—","colour":"gray"},{"date":"2025-05-26","instrument":"DAX","programme":"DAX 25 · London","model":"LQ-EM4","direction":"Long","prob":"LP","phase":"Phase C","window":"12:30 - 1:00","r":3.15,"sl":"—","colour":"green"},{"date":"2025-05-28","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"MP","phase":"Phase A2","window":"11:30 - 12:00","r":2.1,"sl":"—","colour":"gray"},{"date":"2025-06-05","instrument":"DAX","programme":"DAX 25 · London","model":"LQ-EM4","direction":"Long","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":4.5,"sl":"—","colour":"gray"},{"date":"2025-06-13","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"—","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":2.1,"sl":"—","colour":"gray"},{"date":"2025-06-17","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Short","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":2.15,"sl":"—","colour":"gray"},{"date":"2025-06-18","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Short","prob":"MP","phase":"Phase B","window":"2:30 - 2:45 - N","r":4.1,"sl":"—","colour":"gray"},{"date":"2025-06-20","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":3.5,"sl":"—","colour":"gray"},{"date":"2025-06-26","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"MP","phase":"Phase C","window":"1:00 - 1:30","r":0.3,"sl":"—","colour":"green"},{"date":"2025-07-01","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":3.5,"sl":"—","colour":"gray"},{"date":"2025-07-03","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase A","window":"2:00 - 2:30","r":-1.0,"sl":"—","colour":"green"},{"date":"2025-07-07","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Long","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":12.5,"sl":"—","colour":"gray"},{"date":"2025-07-09","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A2","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-07-10","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"—","prob":"LP","phase":"Phase A2","window":"11:30 - 12:00","r":-0.25,"sl":"—","colour":"gray"},{"date":"2025-08-14","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-08-18","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Short","prob":"MP","phase":"Phase D","window":"11:30 - 12:00","r":3.12,"sl":"—","colour":"gray"},{"date":"2025-08-29","instrument":"DAX","programme":"DAX 25 · London","model":"S-C","direction":"Short","prob":"LP","phase":"Phase C","window":"12:30 - 1:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-09-02","instrument":"DAX","programme":"DAX 25 · London","model":"LC-2A (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":4.5,"sl":"—","colour":"gray"},{"date":"2025-09-04","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-09-18","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"11:30 - 12:00","r":7.2,"sl":"—","colour":"gray"},{"date":"2025-09-19","instrument":"DAX","programme":"DAX 25 · London","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"12:30 - 1:00","r":1.68,"sl":"—","colour":"gray"},{"date":"2025-10-08","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Long","prob":"HP","phase":"Phase A","window":"—","r":2.48,"sl":"—","colour":"gray"},{"date":"2025-10-14","instrument":"DAX","programme":"DAX 25 · London","model":"OFS","direction":"Short","prob":"MP","phase":"Phase A2","window":"2:30 - 2:45 - N","r":2.5,"sl":"—","colour":"gray"},{"date":"2025-11-12","instrument":"DAX","programme":"DAX 25 · London","model":"LQ-EM4","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":4.47,"sl":"—","colour":"gray"},{"date":"2025-01-06","instrument":"AU$","programme":"AU$ M5/M15","model":"M5 CE","direction":"Long","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":5.1,"sl":"—","colour":"gray"},{"date":"2025-01-08","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"1:30 - 2:00","r":3.5,"sl":"—","colour":"gray"},{"date":"2025-01-09","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":4.1,"sl":"—","colour":"gray"},{"date":"2025-01-10","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase A2","window":"—","r":2.5,"sl":"—","colour":"gray"},{"date":"2025-01-22","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"LP","phase":"Phase C","window":"1:00 - 1:30","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-01-27","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"1:00 - 1:30","r":2.4,"sl":"—","colour":"gray"},{"date":"2025-01-27","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"LP","phase":"Phase B","window":"2:30 - 2:45 - N","r":2.5,"sl":"—","colour":"gray"},{"date":"2025-02-06","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":2.2,"sl":"—","colour":"gray"},{"date":"2025-02-20","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-2A (M5)","direction":"Long","prob":"HP","phase":"Phase A","window":"12:30 - 1:00","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-03-12","instrument":"AU$","programme":"AU$ M5/M15","model":"—","direction":"Long","prob":"MP","phase":"Phase A","window":"1:30 - 2:00","r":4.3,"sl":"—","colour":"yellow"},{"date":"2025-03-20","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"11:30 - 12:00","r":3.6,"sl":"—","colour":"gray"},{"date":"2025-03-21","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":6.5,"sl":"—","colour":"gray"},{"date":"2025-03-26","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase C","window":"1:30 - 2:00","r":3.59,"sl":"—","colour":"gray"},{"date":"2025-03-31","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-2A (M5)","direction":"Short","prob":"MP","phase":"Phase A","window":"12:00 - 12:30","r":3.1,"sl":"—","colour":"gray"},{"date":"2025-04-16","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"LP","phase":"Phase C","window":"12:30 - 1:00","r":-1.0,"sl":"—","colour":"yellow"},{"date":"2025-04-21","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:00 - 12:30","r":2.6,"sl":"—","colour":"gray"},{"date":"2025-05-05","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-2A (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"1:00 - 1:30","r":3.1,"sl":"—","colour":"blue"},{"date":"2025-05-06","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"MP","phase":"Phase C","window":"12:30 - 1:00","r":2.8,"sl":"—","colour":"blue"},{"date":"2025-05-14","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A2","window":"12:30 - 1:00","r":2.2,"sl":"—","colour":"gray"},{"date":"2025-05-16","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Short","prob":"HP","phase":"Phase C","window":"2:00 - 2:30","r":3.6,"sl":"—","colour":"gray"},{"date":"2025-05-21","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"12:30 - 1:00","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-05-29","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"MP","phase":"Phase A","window":"1:30 - 2:00","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-06-04","instrument":"AU$","programme":"AU$ M5/M15","model":"LC-1 (M5)","direction":"Long","prob":"HP","phase":"Phase A","window":"—","r":7.76,"sl":"—","colour":"gray"},{"date":"2025-01-08","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM4","direction":"—","prob":"MP","phase":"Phase C","window":"12:00 - 12:30","r":13.0,"sl":"—","colour":"gray"},{"date":"2025-01-08","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":6.0,"sl":"—","colour":"gray"},{"date":"2025-01-13","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"LP","phase":"Phase A2","window":"1:00 - 1:30","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-01-13","instrument":"AU$","programme":"AU$ M1 EMs","model":"CE .618","direction":"—","prob":"HP","phase":"Phase C","window":"2:30 - 2:45","r":4.0,"sl":"—","colour":"gray"},{"date":"2025-01-16","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"LP","phase":"Phase C","window":"11:15 - 11:30","r":5.5,"sl":"—","colour":"gray"},{"date":"2025-01-24","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"MP","phase":"Phase A2","window":"1:30 - 2:00","r":4.1,"sl":"—","colour":"gray"},{"date":"2025-01-27","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"MP","phase":"Phase C","window":"11:30 - 12:00","r":4.3,"sl":"—","colour":"gray"},{"date":"2025-01-28","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM2","direction":"—","prob":"LP","phase":"Phase A2","window":"12:30 - 1:00","r":-1.0,"sl":"—","colour":"gray"},{"date":"2025-02-10","instrument":"AU$","programme":"AU$ M1 EMs","model":"LQ-EM4","direction":"—","prob":"MP","phase":"Phase C","window":"2:00 - 2:30","r":6.1,"sl":"—","colour":"gray"}];
+
+const PROFILE = {
+ email:"Rajwardhankr@outlook.com",
+ github:"https://github.com/justtriio",
+ linkedin:"https://www.linkedin.com/in/rajwardhankr/"
+};
+
+/* ============================================================
+   DASHBOARD CALCULATIONS
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const fmt = (n,d=2) => Number(n).toFixed(d);
+const fmtR = n => (n>0?"+":"") + Number(n).toFixed(2) + "R";
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function tweenNum(el,to,fmtFn,dur){
+ dur=dur||500;
+ if(REDUCED||to==null||!isFinite(to)){el.textContent=fmtFn(to);el._v=to;return;}
+ const from=(typeof el._v==="number"&&isFinite(el._v))?el._v:0;
+ const tok=(el._tok||0)+1;el._tok=tok;
+ const t0=performance.now();
+ function step(t){
+  if(el._tok!==tok)return;
+  const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3),v=from+(to-from)*e;
+  el.textContent=fmtFn(v);
+  if(k<1)requestAnimationFrame(step);else{el.textContent=fmtFn(to);el._v=to;}
+ }
+ requestAnimationFrame(step);
+}
+const sorted = arr => [...arr].sort((a,b)=>a.date.localeCompare(b.date));
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function calculate(trades){
+ const n=trades.length;
+ if(!n)return null;
+ const wins=trades.filter(t=>t.r>0);
+ const losses=trades.filter(t=>t.r<0);
+ const net=trades.reduce((s,t)=>s+t.r,0);
+ const grossWin=wins.reduce((s,t)=>s+t.r,0);
+ const grossLoss=Math.abs(losses.reduce((s,t)=>s+t.r,0));
+ let equity=0,peak=0,maxDD=0;
+ const curve=sorted(trades).map(t=>{
+  equity+=t.r;peak=Math.max(peak,equity);
+  maxDD=Math.max(maxDD,peak-equity);
+  return {date:t.date,equity,dd:peak-equity,r:t.r,inst:t.instrument};
+ });
+ return {
+  n,wins:wins.length,losses:losses.length,net,
+  winRate:wins.length/n*100,
+  pf:grossLoss?grossWin/grossLoss:Infinity,
+  avg:net/n,maxDD,
+  avgWin:wins.length?grossWin/wins.length:0,
+  avgLoss:losses.length?losses.reduce((s,t)=>s+t.r,0)/losses.length:0,
+  curve
+ };
+}
+
+function currentTrades(){
+ const fi=$("fInst").value,fp=$("fProg").value,fm=$("fModel").value,fd=$("fDir").value,
+       ff=$("fFrom").value,ft=$("fTo").value;
+ return TRADES.filter(t=>
+  (!fi||t.instrument===fi)&&(!fp||t.programme===fp)&&(!fm||t.model===fm)&&
+  (!fd||t.direction===fd)&&(!ff||t.date>=ff)&&(!ft||t.date<=ft));
+}
+
+let lastCurve=[];
+function render(instant){
+ const activeTrades=sorted(currentTrades());
+ const s=calculate(activeTrades);
+ $("emptyState").style.display=s?"none":"block";
+ if(!s){
+  ["mTrades","mWin","mNet","mPF","sAvg","sDD","sWin","sLoss","sWinners","sLosers"].forEach(id=>{$(id).textContent="—";$(id)._v=null;});
+  $("tradeTable").innerHTML='<tr><td colspan="6">No trade records for this filter.</td></tr>';
+  $("tradeCount").textContent="0 RECORDS";
+  $("splitList").innerHTML="";
+  $("ddNote").textContent="—";
+  lastCurve=[];
+  drawEquity([]);drawMonthly([]);drawHeatmap([]);drawDrawdown([]);
+  return;
+ }
+ tweenNum($("mTrades"),s.n,v=>String(Math.round(v)));
+ tweenNum($("mWin"),s.winRate,v=>fmt(v,1)+"%");
+ tweenNum($("mNet"),s.net,v=>(v>0?"+":"")+fmt(v)+"R");
+ if(Number.isFinite(s.pf))tweenNum($("mPF"),s.pf,v=>fmt(v));
+ else{$("mPF").textContent="∞";$("mPF")._v=null;}
+ tweenNum($("sAvg"),s.avg,v=>fmtR(v));
+ tweenNum($("sDD"),s.maxDD,v=>"−"+fmt(v)+"R");
+ tweenNum($("sWin"),s.avgWin,v=>fmtR(v));
+ if(s.losses)tweenNum($("sLoss"),s.avgLoss,v=>fmtR(v));
+ else{$("sLoss").textContent="—";$("sLoss")._v=null;}
+ tweenNum($("sWinners"),s.wins,v=>String(Math.round(v)));
+ tweenNum($("sLosers"),s.losses,v=>String(Math.round(v)));
+ lastCurve=s.curve;
+ if(instant){drawEquity(s.curve);drawMonthly(activeTrades,1);drawDrawdown(s.curve,1);}
+ else animateCharts(s.curve,activeTrades);
+ drawHeatmap(activeTrades);
+ $("ddNote").textContent="Max drawdown in view: −"+fmt(s.maxDD)+"R";
+ renderSplits(activeTrades);
+ $("tradeCount").textContent=s.n+" RECORDS";
+ $("tradeTable").innerHTML=sorted(activeTrades).slice(-12).reverse().map(t=>`
+ <tr><td>${escapeHTML(t.date)}</td><td>${escapeHTML(t.instrument)}</td>
+ <td class="opt-col">${escapeHTML(t.programme)}</td><td class="opt-col">${escapeHTML(t.model)}</td><td>${escapeHTML(t.direction)}</td>
+ <td class="${t.r>=0?"positive":"negative"}">${fmtR(t.r)}</td></tr>`).join("");
+}
+
+function renderSplits(trades){
+ const row=(label,set)=>{
+  const ss=calculate(set);
+  if(!ss)return `<div class="stat-row"><span>${label}</span><span>—</span></div>`;
+  return `<div class="stat-row"><span>${label} · ${ss.n} trades</span><span class="${ss.net>=0?"positive":"negative"}">${fmtR(ss.net)} · ${fmt(ss.winRate,0)}% WR</span></div>`;
+ };
+ $("splitList").innerHTML =
+  row("Long",trades.filter(t=>t.direction==="Long"))+
+  row("Short",trades.filter(t=>t.direction==="Short"))+
+  row("EU$ (EUR/USD)",trades.filter(t=>t.instrument==="EU$"))+
+  row("DAX",trades.filter(t=>t.instrument==="DAX"))+
+  row("AU$ (AUD/USD)",trades.filter(t=>t.instrument==="AU$"));
+}
+
+/* ============================================================
+   RESPONSIVE CANVAS CHARTS
+   ============================================================ */
+function canvasSetup(id){
+ const c=$(id),r=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ c.width=Math.max(1,r.width*dpr);c.height=Math.max(1,r.height*dpr);
+ const ctx=c.getContext("2d");ctx.scale(dpr,dpr);
+ return {ctx,w:r.width,h:r.height};
+}
+let eqGeom=null;
+function drawEquity(data,hi,p){
+ p=(p==null?1:p);
+ const {ctx,w,h}=canvasSetup("equityCanvas");
+ ctx.clearRect(0,0,w,h);
+ const pad={l:40,r:12,t:15,b:25},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+ const vals=data.map(p=>p.equity);
+ if(!vals.length){ctx.fillStyle="#a5a5b0";ctx.font="12px DM Sans";ctx.fillText("No data available",pad.l,h/2);eqGeom=null;return;}
+ const min=Math.min(0,...vals),max=Math.max(0,...vals),range=max-min||1;
+ const x=i=>pad.l+(data.length===1?cw/2:i/(data.length-1)*cw);
+ const y=v=>pad.t+(max-v)/range*ch;
+ eqGeom={data,x,y,pad,cw};
+ ctx.strokeStyle="rgba(225,228,238,.07)";ctx.lineWidth=1;
+ for(let i=0;i<5;i++){
+  const yy=pad.t+i*ch/4;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();
+  ctx.fillStyle="#737581";ctx.font="9px DM Mono";ctx.fillText((max-i*range/4).toFixed(1),2,yy+3);
+ }
+ let vis=data.map((pt,i)=>[x(i),pt.equity]);
+ if(p<1&&data.length>1){
+  const f=p*(data.length-1),full=Math.floor(f),frac=f-full;
+  vis=data.slice(0,full+1).map((pt,i)=>[x(i),pt.equity]);
+  if(full<data.length-1){
+   const a=data[full],b=data[full+1];
+   vis.push([pad.l+f/(data.length-1)*cw,a.equity+(b.equity-a.equity)*frac]);
+  }
+ }
+ ctx.beginPath();vis.forEach((pt,i)=>i?ctx.lineTo(pt[0],y(pt[1])):ctx.moveTo(pt[0],y(pt[1])));
+ ctx.lineTo(vis[vis.length-1][0],y(min));ctx.lineTo(vis[0][0],y(min));ctx.closePath();
+ const grad=ctx.createLinearGradient(0,pad.t,0,h);
+ grad.addColorStop(0,"rgba(168,154,203,.26)");grad.addColorStop(1,"rgba(168,154,203,0)");
+ ctx.fillStyle=grad;ctx.fill();
+ ctx.beginPath();vis.forEach((pt,i)=>i?ctx.lineTo(pt[0],y(pt[1])):ctx.moveTo(pt[0],y(pt[1])));
+ ctx.strokeStyle="#a89acb";ctx.lineWidth=2.2;ctx.stroke();
+ if(p>=1&&data.length<100)data.forEach((pt,i)=>{ctx.beginPath();ctx.arc(x(i),y(pt.equity),2.5,0,Math.PI*2);ctx.fillStyle="#b9add8";ctx.fill();});
+ if(p>=1&&hi!=null&&data[hi]){
+  ctx.beginPath();ctx.arc(x(hi),y(data[hi].equity),4.5,0,Math.PI*2);
+  ctx.fillStyle="#eeedf2";ctx.fill();ctx.strokeStyle="#b9add8";ctx.lineWidth=2;ctx.stroke();
+ }
+}
+$("equityCanvas").addEventListener("mousemove",e=>{
+ if(!eqGeom||!eqGeom.data.length)return;
+ const rect=e.target.getBoundingClientRect();
+ const mx=e.clientX-rect.left;
+ let best=0,bd=1e9;
+ eqGeom.data.forEach((p,i)=>{const d=Math.abs(eqGeom.x(i)-mx);if(d<bd){bd=d;best=i;}});
+ const p=eqGeom.data[best];
+ $("eqTip").textContent=p.date+" · "+p.inst+" · trade "+fmtR(p.r)+" · cumulative "+fmtR(p.equity);
+ drawEquity(eqGeom.data,best);
+});
+$("equityCanvas").addEventListener("mouseleave",()=>{
+ $("eqTip").textContent="Hover the curve for exact values.";
+ if(lastCurve.length)drawEquity(lastCurve);
+});
+function drawDrawdown(curve,p){
+ p=(p==null?1:p);
+ const {ctx,w,h}=canvasSetup("ddCanvas");
+ ctx.clearRect(0,0,w,h);
+ const pad={l:40,r:12,t:14,b:22},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+ if(!curve.length){ctx.fillStyle="#a5a5b0";ctx.font="12px DM Sans";ctx.fillText("No data available",pad.l,h/2);return;}
+ const maxDD=Math.max(...curve.map(pt=>pt.dd),0.5);
+ const x=i=>pad.l+(curve.length===1?cw/2:i/(curve.length-1)*cw);
+ const y=v=>pad.t+(v/maxDD)*ch;
+ ctx.strokeStyle="rgba(225,228,238,.07)";ctx.lineWidth=1;
+ for(let i=0;i<3;i++){
+  const yy=pad.t+i*ch/2;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();
+  ctx.fillStyle="#737581";ctx.font="9px DM Mono";ctx.fillText("−"+(i*maxDD/2).toFixed(1),2,yy+3);
+ }
+ let vis=curve.map((pt,i)=>[x(i),pt.dd]);
+ if(p<1&&curve.length>1){
+  const f=p*(curve.length-1),full=Math.floor(f),frac=f-full;
+  vis=curve.slice(0,full+1).map((pt,i)=>[x(i),pt.dd]);
+  if(full<curve.length-1){
+   const a=curve[full],b=curve[full+1];
+   vis.push([pad.l+f/(curve.length-1)*cw,a.dd+(b.dd-a.dd)*frac]);
+  }
+ }
+ ctx.beginPath();vis.forEach((pt,i)=>i?ctx.lineTo(pt[0],y(pt[1])):ctx.moveTo(pt[0],y(pt[1])));
+ ctx.lineTo(vis[vis.length-1][0],pad.t);ctx.lineTo(vis[0][0],pad.t);ctx.closePath();
+ ctx.fillStyle="rgba(213,141,145,.20)";ctx.fill();
+ ctx.beginPath();vis.forEach((pt,i)=>i?ctx.lineTo(pt[0],y(pt[1])):ctx.moveTo(pt[0],y(pt[1])));
+ ctx.strokeStyle="#d58d91";ctx.lineWidth=1.8;ctx.stroke();
+}
+let chartTok=0;
+function animateCharts(curve,trades){
+ const tok=++chartTok;
+ if(REDUCED){drawEquity(curve);drawMonthly(trades,1);drawDrawdown(curve,1);return;}
+ const t0=performance.now(),dur=620;
+ function step(t){
+  if(tok!==chartTok)return;
+  const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);
+  drawEquity(curve,null,e);drawMonthly(trades,e);drawDrawdown(curve,e);
+  if(k<1)requestAnimationFrame(step);
+ }
+ requestAnimationFrame(step);
+}
+function monthlyTotals(trades){
+ const map={};
+ trades.forEach(t=>{
+  const key=t.date.slice(0,7);
+  map[key]=(map[key]||0)+t.r;
+ });
+ return Object.entries(map).sort((a,b)=>a[0].localeCompare(b[0]));
+}
+function drawMonthly(trades,p){
+ p=(p==null?1:p);
+ const {ctx,w,h}=canvasSetup("monthlyCanvas");
+ ctx.clearRect(0,0,w,h);
+ const data=monthlyTotals(trades);
+ if(!data.length)return;
+ const max=Math.max(1,...data.map(d=>Math.abs(d[1])));
+ const zero=h*.78,usable=h*.66,bw=Math.max(5,(w-50)/data.length-7);
+ const gap=(w-50)/data.length;
+ data.forEach(([month,val],i)=>{
+  const height=Math.abs(val)/max*usable*p;
+  const x=42+i*gap;
+  ctx.fillStyle=val>=0?"#a89acb":"#d58d91";
+  ctx.fillRect(x,val>=0?zero-height:zero,bw,height);
+  ctx.fillStyle="#737581";ctx.font="8px DM Mono";
+  if(data.length<=14)ctx.fillText(month.slice(2),x, h-7);
+ });
+ ctx.strokeStyle="rgba(225,228,238,.12)";ctx.beginPath();ctx.moveTo(35,zero);ctx.lineTo(w,zero);ctx.stroke();
+}
+function drawHeatmap(trades){
+ const totals=monthlyTotals(trades);
+ $("heatmap").innerHTML=totals.length?totals.map(([m,v])=>`<div class="heat-cell ${v>0?"pos":v<0?"neg":"zero"}" title="${m}: ${fmtR(v)}">${m.slice(2)}<br>${v>0?"+":""}${fmt(v,1)}R</div>`).join(""):'<div class="small">No data available</div>';
+}
+window.addEventListener("resize",()=>{clearTimeout(window._resizeTimer);window._resizeTimer=setTimeout(()=>render(true),150)});
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+function fillSelect(id,vals){
+ const s=$(id),cur=s.value;
+ s.innerHTML='<option value="">'+s.getAttribute("data-all")+"</option>"+vals.map(v=>`<option value="${escapeHTML(v)}"${v===cur?" selected":""}>${escapeHTML(v==="—"?"Not logged":v)}</option>`).join("");
+ if(!vals.includes(cur))s.value="";
+}
+function syncFilters(){
+ const fi=$("fInst").value;
+ const progs=[],models=[];
+ TRADES.forEach(t=>{
+  if(!fi||t.instrument===fi){
+   if(!progs.includes(t.programme))progs.push(t.programme);
+   if(!models.includes(t.model))models.push(t.model);
+  }
+ });
+ fillSelect("fProg",progs.sort());
+ fillSelect("fModel",models.sort());
+}
+function resetFilters(){
+ ["fInst","fProg","fModel","fDir"].forEach(id=>$(id).value="");
+ $("fFrom").value="";$("fTo").value="";
+ syncFilters();render();
+}
+function initFilters(){
+ $("fProg").setAttribute("data-all","All programmes");
+ $("fModel").setAttribute("data-all","All models");
+ syncFilters();
+ ["fInst","fProg","fModel","fDir","fFrom","fTo"].forEach(id=>{
+  $(id).addEventListener("change",()=>{if(id==="fInst")syncFilters();render();});
+ });
+ $("fReset").addEventListener("click",resetFilters);
+}
+
+/* ============================================================
+   TRADE EXPLORER
+   ============================================================ */
+function renderTable(){
+ const q=($("q").value||"").toLowerCase(),mode=$("qSort").value;
+ let t=TRADES.filter(x=>!q||(x.date+x.instrument+x.programme+x.model+x.direction+x.prob+x.phase+x.window).toLowerCase().indexOf(q)>-1);
+ t=[...t].sort((a,b)=>mode==="desc"?b.r-a.r:mode==="asc"?a.r-b.r:a.date.localeCompare(b.date));
+ $("tbody").innerHTML=t.map(x=>`<tr><td>${escapeHTML(x.date)}</td><td>${escapeHTML(x.instrument)}</td><td>${escapeHTML(x.model)}</td><td>${escapeHTML(x.direction)}</td><td class="opt-col">${escapeHTML(x.prob)}</td><td class="opt-col">${escapeHTML(x.phase)}</td><td class="opt-col">${escapeHTML(x.window)}</td><td class="opt-col">${escapeHTML(x.sl)}</td><td class="${x.r>=0?"positive":"negative"}">${fmtR(x.r)}</td></tr>`).join("");
+ $("tcount").textContent="Showing "+t.length+" of 150 trades · backtest records, exactly as logged.";
+}
+$("q").addEventListener("input",renderTable);
+$("qSort").addEventListener("change",renderTable);
+
+/* ============================================================
+   NAVIGATION, REVEAL, CONTACT
+   ============================================================ */
+$("menu").addEventListener("click",function(){
+ const open=$("navLinks").classList.toggle("open");
+ this.setAttribute("aria-expanded",open);
+});
+document.querySelectorAll(".nav-links a").forEach(a=>a.addEventListener("click",()=>$("navLinks").classList.remove("open")));
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{
+ if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target);}
+}),{threshold:.08});
+document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+
+const sections=[...document.querySelectorAll("main section[id]")];
+const navAnchors=[...document.querySelectorAll(".nav-links a")];
+const navObserver=new IntersectionObserver(entries=>{
+ entries.forEach(e=>{
+  if(e.isIntersecting)navAnchors.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+e.target.id));
+ });
+},{rootMargin:"-30% 0px -60% 0px"});
+sections.forEach(s=>navObserver.observe(s));
+
+$("year").textContent=new Date().getFullYear();
+$("emailLink").href="mailto:"+PROFILE.email;
+$("githubLink").href=PROFILE.github;
+$("linkedinLink").href=PROFILE.linkedin;
+$("copyMail").addEventListener("click",()=>{
+ const done=()=>{$("copyMsg").textContent="Email copied — "+PROFILE.email;};
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(PROFILE.email).then(done,done);}else{done();}
+});
+
+/* ============================================================
+   SCROLL EXPERIENCE — progress bar, hero parallax, staggers
+   ============================================================ */
+const heroArt=document.querySelector(".hero-art");
+let scrollTick=false;
+function onScroll(){
+ const st=window.scrollY||0;
+ const max=document.documentElement.scrollHeight-window.innerHeight;
+ $("scrollProgress").style.width=(max>0?Math.min(100,st/max*100):0)+"%";
+ if(heroArt&&!REDUCED&&st<900)heroArt.style.transform="translateY("+(st*0.05)+"px)";
+ scrollTick=false;
+}
+window.addEventListener("scroll",()=>{if(!scrollTick){scrollTick=true;requestAnimationFrame(onScroll);}},{passive:true});
+onScroll();
+
+if(!REDUCED){
+ document.querySelectorAll(".research-grid,.project-grid").forEach(g=>{
+  [...g.children].forEach((c,i)=>{
+   if(c.classList.contains("reveal")){
+    c.style.transitionDelay=(i*0.07)+"s";
+    setTimeout(()=>{c.style.transitionDelay="";},1800);
+   }
+  });
+ });
+}
+
+[["hsTrades",150,v=>String(Math.round(v))],
+ ["hsNet",484.23,v=>(v>0?"+":"")+fmt(v)+"R"],
+ ["hsWin",84.7,v=>fmt(v,1)+"%"]].forEach((cfg,i)=>{
+ const el=$(cfg[0]);if(!el)return;
+ el._v=0;
+ setTimeout(()=>tweenNum(el,cfg[1],cfg[2],900),REDUCED?0:120*i+80);
+});
+
+initFilters();
+render();
+renderTable();
+</script>
+</body>
+</html>
